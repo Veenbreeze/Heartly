@@ -49,8 +49,8 @@ Open <http://localhost:3000>.
 | `NEXT_PUBLIC_SITE_URL` | Yes | Canonical URL used for metadata and share links |
 | `NEXT_PUBLIC_SUPPORT_EMAIL` | Yes | Support address shown on public pages |
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public anon or publishable key |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | No | New publishable key format, used when present |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | One of | Public anon key; use the publishable key instead when available |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | One of | New publishable key format, preferred when present |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server-only key for admin operations; never expose it |
 | `GIFT_UNLOCK_SECRET` | Yes | Signs password-protected gift unlock cookies |
 | `PAYMENT_PROVIDER` | Yes | `mock` locally, `clickpesa` in production |
@@ -122,22 +122,30 @@ npm run db:reset     # reset local Supabase and reapply migrations
 
 ## Deployment
 
-1. Create a Supabase project and apply the migrations with `supabase db push`.
-2. Configure Auth redirect URLs for the production domain, including
-   `/auth/callback`.
-3. Create the Storage bucket used for gift media and apply its policies.
-4. Set every required environment variable in the hosting provider.
-5. Build and deploy with `npm run build` and `npm run start`, or use Vercel.
-6. Configure a ClickPesa webhook pointing at `/api/payments/webhook/clickpesa`.
-7. Set `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin.
-8. In Supabase Auth, add the production domain to the Site URL and redirect
-   allow list. For local development against a hosted project, also allow
-   `http://localhost:3000/**` and `http://127.0.0.1:3000/**`.
-9. Configure custom SMTP (Authentication → Emails → SMTP). The built-in email
+Heartly is deployed on Vercel at
+<https://heartly-veenbreezes-projects.vercel.app>. GitHub `master` is connected
+to the Vercel project, so every push to `master` creates a production
+deployment. GitHub Pages is not suitable because the app relies on Next.js
+server actions, API routes, middleware, and Supabase SSR.
+
+1. Create a Supabase project and apply the migrations:
+   `supabase db push` (or `supabase db query --linked --file <migration>`).
+2. In Supabase Auth → URL Configuration, set the Site URL to the production
+   origin and add these redirect URLs:
+   - `https://<your-domain>/**`
+   - `https://<your-domain>/auth/callback`
+   - `http://localhost:3000/**` and `http://127.0.0.1:3000/**` for local
+     development against the hosted project
+3. Set the environment variables in Vercel (Project → Settings → Environment
+   Variables, or `vercel env add <name> production`) from the table above. Set
+   `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin.
+4. Deploy with `vercel deploy --prod`, or push to `master` if the Git
+   integration is connected.
+5. Configure custom SMTP (Authentication → Emails → SMTP). The built-in email
    service is heavily rate limited and only reaches project team members, so it
    cannot deliver signup confirmation emails to real users. Until SMTP is set
    up, disable "Confirm email" for testing.
-9. Promote the first administrator after signing up (the app never grants admin
+6. Promote the first administrator after signing up (the app never grants admin
    through the UI):
 
    ```sql
@@ -146,9 +154,16 @@ npm run db:reset     # reset local Supabase and reapply migrations
    where id = (select id from auth.users where email = 'you@example.com');
    ```
 
-10. Optionally set `RESEND_API_KEY` and `EMAIL_FROM` to enable reply, publish,
-    and payment notification emails. Delivery is best effort and never blocks
-    the underlying action.
+7. Optionally set `RESEND_API_KEY` and `EMAIL_FROM` to enable reply, publish,
+   and payment notification emails. Delivery is best effort and never blocks
+   the underlying action.
+8. Before taking real payments, configure ClickPesa: set `PAYMENT_PROVIDER` to
+   `clickpesa`, add the ClickPesa credentials, point the webhook at
+   `/api/payments/webhook/clickpesa`, and remove `ALLOW_MOCK_PAYMENTS`.
+
+The current demo deployment uses `PAYMENT_PROVIDER=mock` and
+`ALLOW_MOCK_PAYMENTS=true` so checkout can be tested without live ClickPesa
+credentials. Never leave those settings enabled for real payments.
 
 ## Project layout
 

@@ -9,8 +9,23 @@ export const DEFAULT_TIMEZONE = "Africa/Dar_es_Salaam";
 
 export function siteUrl() {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configured) return configured.replace(/\/$/, "");
+  const isLocal = Boolean(
+    configured && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/?$/.test(configured),
+  );
+
+  if (configured && !isLocal) return configured.replace(/\/$/, "");
+
+  const vercelProduction = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (vercelProduction) {
+    return `https://${vercelProduction
+      .replace(/^https?:\/\//, "")
+      .replace(/\/$/, "")}`;
+  }
+
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+
+  if (configured) return configured.replace(/\/$/, "");
+
   return "http://localhost:3000";
 }
 
