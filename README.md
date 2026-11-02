@@ -1,5 +1,7 @@
 # Heartly
 
+[![CI](https://github.com/Veenbreeze/Heartly/actions/workflows/ci.yml/badge.svg)](https://github.com/Veenbreeze/Heartly/actions/workflows/ci.yml)
+
 Heartly is a gift-page builder for birthdays, weddings, anniversaries, and other
 milestones. Senders create a personalised page with photos, music, messages, and
 interactive responses, then share it with a private link or QR code.
@@ -164,6 +166,25 @@ server actions, API routes, middleware, and Supabase SSR.
 The current demo deployment uses `PAYMENT_PROVIDER=mock` and
 `ALLOW_MOCK_PAYMENTS=true` so checkout can be tested without live ClickPesa
 credentials. Never leave those settings enabled for real payments.
+
+## CI/CD
+
+- **Continuous Integration** runs on every push and pull request to `master`
+  via GitHub Actions: typecheck, lint, Vitest unit tests, production build, and
+  Playwright (Chromium) end-to-end tests. See `.github/workflows/ci.yml`.
+- **Continuous Deployment** is handled by Vercel. The `Veenbreeze/Heartly`
+  repository is connected to the Vercel project, so every push to `master`
+  triggers a production build and deployment. Pull requests get preview
+  deployments automatically.
+- **Live deployment**: <https://heartly-veenbreezes-projects.vercel.app>.
+- **Dependabot** opens weekly pull requests for npm and GitHub Actions updates;
+  those PRs run through CI and receive Vercel preview deployments.
+
+Protect `master` in GitHub and require the `Typecheck, lint, unit tests`,
+`Production build`, and `Playwright (chromium)` checks before merging. If you
+later want deployments gated by CI, disable Vercel's automatic Git deployments
+and add a `deploy` job that runs the Vercel CLI with `VERCEL_TOKEN`,
+`VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` repository secrets.
 
 ## Project layout
 
