@@ -37,7 +37,7 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "Heartly — Digital gifts made personal",
+    default: "Heartly Digital Gifts",
     template: "%s · Heartly",
   },
   description:
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Heartly",
-    title: "Heartly — Digital gifts made personal",
+    title: "Heartly Digital Gifts",
     description:
       "Thoughtful digital gifts with music, photos, and a message that feels like you.",
     url: "/",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Heartly — Digital gifts made personal",
+    title: "Heartly Digital Gifts",
     description: "Create and send a digital gift in minutes.",
     images: ["/opengraph-image"],
   },
