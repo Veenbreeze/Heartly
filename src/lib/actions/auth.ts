@@ -271,15 +271,18 @@ export async function updateProfileAction(
   return { status: "success", message: "Profile saved." };
 }
 
-export async function signInWithGoogleAction() {
+export async function signInWithGoogleAction(formData: FormData) {
   if (!isSupabaseConfigured()) {
     redirect("/login?setup=1");
   }
   const supabase = await createSupabaseServerClient();
   if (!supabase) redirect("/login?setup=1");
+  const next = safeRedirectPath(stringValue(formData, "next"), "/dashboard");
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${siteUrl()}/auth/callback` },
+    options: {
+      redirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
   });
   if (error || !data.url) {
     redirect(`/login?error=${encodeURIComponent(error?.message ?? "oauth")}`);

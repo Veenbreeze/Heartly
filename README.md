@@ -127,7 +127,7 @@ npm run db:reset     # reset local Supabase and reapply migrations
 ## Deployment
 
 Heartly is deployed on Vercel at
-<https://heartly-veenbreezes-projects.vercel.app>. GitHub `master` is connected
+<https://heartly-ashy.vercel.app>. GitHub `master` is connected
 to the Vercel project, so every push to `master` creates a production
 deployment. GitHub Pages is not suitable because the app relies on Next.js
 server actions, API routes, middleware, and Supabase SSR.
@@ -136,9 +136,9 @@ server actions, API routes, middleware, and Supabase SSR.
    `supabase db push` (or `supabase db query --linked --file <migration>`).
 2. In Supabase Auth → URL Configuration, set the Site URL to the production
    origin and add these redirect URLs:
-   - `https://<your-domain>/**`
-   - `https://<your-domain>/auth/callback`
-   - `http://localhost:3000/**` and `http://127.0.0.1:3000/**` for local
+   - `https://heartly-ashy.vercel.app/auth/callback`
+   - `http://localhost:3000/auth/callback` and
+     `http://127.0.0.1:3000/auth/callback` for local
      development against the hosted project
 3. Set the environment variables in Vercel (Project → Settings → Environment
    Variables, or `vercel env add <name> production`) from the table above. Set
@@ -170,7 +170,25 @@ server actions, API routes, middleware, and Supabase SSR.
      EmailJS's private key stays in Edge Function secrets and is never sent to
      the browser. Local Supabase has six digit confirmations enabled in
      `supabase/config.toml` and captures email in its local inbox.
-6. Promote the first administrator after signing up (the app never grants admin
+6. Enable Google sign in and sign up:
+   - In Google Cloud, create an OAuth client with application type **Web**.
+     Add `https://heartly-ashy.vercel.app` as an authorized JavaScript origin.
+   - Copy the OAuth callback URL shown in Supabase Authentication under
+     **Sign In Providers > Google** into Google's **Authorized redirect URIs**.
+     It has the form `https://<project-ref>.supabase.co/auth/v1/callback`.
+   - Enable Google in Supabase and save the Google Client ID and Client Secret
+     there. Do not put the client secret in Vercel. The app already uses the
+     Supabase Google OAuth flow for both login and registration.
+   - In Supabase Authentication under **URL Configuration**, use
+     `https://heartly-ashy.vercel.app` as the Site URL and allow
+     `https://heartly-ashy.vercel.app/auth/callback`. Add
+     `http://localhost:3000/auth/callback` when using the hosted Supabase
+     project locally.
+   - For local Supabase only, copy `supabase/.env.example` to the repository
+     root as `.env`, add the Google Client ID and Secret, set
+     `[auth.external.google].enabled = true` in `supabase/config.toml`, then
+     restart Supabase with `supabase stop` and `supabase start`.
+7. Promote the first administrator after signing up (the app never grants admin
    through the UI):
 
    ```sql
@@ -179,10 +197,10 @@ server actions, API routes, middleware, and Supabase SSR.
    where id = (select id from auth.users where email = 'you@example.com');
    ```
 
-7. Optionally set `RESEND_API_KEY` and `EMAIL_FROM` to enable reply, publish,
+8. Optionally set `RESEND_API_KEY` and `EMAIL_FROM` to enable reply, publish,
    and payment notification emails. Delivery is best effort and never blocks
    the underlying action.
-8. Configure ClickPesa mobile money:
+9. Configure ClickPesa mobile money:
    - Create and verify a ClickPesa merchant account. Complete KYC and enable
      the collection channels you want to offer.
    - In **Settings → Developers**, create a **Hosted** application with
@@ -201,9 +219,8 @@ server actions, API routes, middleware, and Supabase SSR.
    - Test with a low value real payment after the account and channels are
      approved. ClickPesa documents production testing rather than a sandbox.
 
-The current demo deployment uses `PAYMENT_PROVIDER=mock` and
-`ALLOW_MOCK_PAYMENTS=true` so checkout can be tested without live ClickPesa
-credentials. Never leave those settings enabled for real payments.
+Local development defaults to mock payments. Production uses ClickPesa with
+mock payments disabled.
 
 ## CI/CD
 

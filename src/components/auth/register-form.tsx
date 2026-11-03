@@ -15,6 +15,7 @@ export function RegisterForm({ next }: { next?: string }) {
   return (
     <div className="space-y-5">
       <form action={signInWithGoogleAction}>
+        <input type="hidden" name="next" value={next ?? "/dashboard"} />
         <Button type="submit" variant="outline" className="h-12 w-full rounded-2xl border-[#e9ded8] bg-white text-plum shadow-sm hover:bg-[#fbf6f1]">
           <Globe /> Continue with Google
         </Button>
