@@ -57,7 +57,7 @@ const faqs = [
   {
     question: "How do payments work?",
     answer:
-      "Pay securely through ClickPesa by M-Pesa, HaloPesa, Airtel Money, Mixx by Yas, or card where enabled. Heartly never asks for or stores your mobile money PIN or full card number.",
+      "Enter your mobile money number and approve the ClickPesa prompt with your wallet PIN. Premium mobile money charges are collected in Tanzanian shillings. Heartly never asks for or stores your PIN.",
   },
 ];
 
@@ -184,10 +184,10 @@ export default async function PricingPage() {
                 <UpgradeButton
                   signedIn={Boolean(user)}
                   isPremium={entitlements.tier === "premium"}
-                  currency={currency}
+                  amountTzs={premium?.price_tzs ?? 15000}
                 />
                 <p className="mt-3 text-center text-[10px] text-white/45">
-                  Secure checkout through ClickPesa. Cancel anytime.
+                  Enter your number and approve the secure mobile money prompt. Cancel anytime.
                 </p>
               </div>
             </article>

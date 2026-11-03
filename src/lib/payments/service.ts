@@ -1,16 +1,17 @@
 import { randomBytes } from "node:crypto";
 import { getAdminClient } from "@/lib/supabase/admin";
-import { createClickPesaCheckout } from "@/lib/payments/clickpesa";
+import { initiateClickPesaUssdPush } from "@/lib/payments/clickpesa";
 import { paymentProviderName } from "@/lib/env";
-import { formatMoney, siteUrl, absoluteUrl } from "@/lib/utils";
+import { formatMoney, absoluteUrl } from "@/lib/utils";
 import { sendTransactionalEmail } from "@/lib/email";
 import type { Payment, Plan, Subscription } from "@/lib/types";
 
 export interface CheckoutResult {
   paymentId: string;
   reference: string;
-  checkoutUrl: string;
+  checkoutUrl: string | null;
   provider: "mock" | "clickpesa";
+  status: string;
 }
 
 function periodEnd(
@@ -35,10 +36,12 @@ export async function createCheckout({
   userId,
   plan,
   currency,
+  phoneNumber,
 }: {
   userId: string;
   plan: Plan;
   currency: "TZS" | "USD";
+  phoneNumber: string;
 }): Promise<CheckoutResult> {
   const admin = getAdminClient();
   if (!admin) throw new Error("DATABASE_NOT_CONFIGURED");
@@ -48,17 +51,11 @@ export async function createCheckout({
   if (amount <= 0) throw new Error("PLAN_NOT_PURCHASABLE");
 
   // ClickPesa accepts alphanumeric order references only.
-  const reference = `HTL${Date.now().toString(36).toUpperCase()}${randomBytes(6).toString("hex").toUpperCase()}`;
-  const checkoutUrl =
-    provider === "clickpesa"
-      ? await createClickPesaCheckout({
-          amount,
-          currency,
-          orderReference: reference,
-          description: `${plan.name} · Heartly`,
-          callbackUrl: `${siteUrl()}/api/payments/webhook/clickpesa`,
-        })
-      : `/checkout/mock/${encodeURIComponent(reference)}`;
+  if (provider === "clickpesa" && currency !== "TZS") {
+    throw new Error("CLICKPESA_USSD_TZS_ONLY");
+  }
+  // ClickPesa USSD order references are limited to 20 alphanumeric characters.
+  const reference = `HTL${Date.now().toString(36).toUpperCase()}${randomBytes(4).toString("hex").toUpperCase()}`;
 
   const { data, error } = await admin
     .from("payments")
@@ -70,7 +67,7 @@ export async function createCheckout({
       amount,
       currency,
       status: "pending",
-      checkout_url: checkoutUrl,
+      checkout_url: null,
       metadata: {
         plan_code: plan.code,
         plan_name: plan.name,
@@ -83,11 +80,35 @@ export async function createCheckout({
 
   if (error || !data) throw new Error("PAYMENT_CREATE_FAILED");
 
+  let checkoutUrl: string | null = null;
+  try {
+    if (provider === "clickpesa") {
+      const push = await initiateClickPesaUssdPush({ amount, orderReference: reference, phoneNumber });
+      await admin.from("payments").update({
+        metadata: {
+          plan_code: plan.code,
+          plan_name: plan.name,
+          billing_interval: plan.billing_interval,
+          initiated_at: new Date().toISOString(),
+          provider_transaction_id: push.id,
+          provider_status: push.status,
+        },
+      }).eq("id", data.id);
+    } else {
+      checkoutUrl = `/checkout/mock/${encodeURIComponent(reference)}`;
+      await admin.from("payments").update({ checkout_url: checkoutUrl }).eq("id", data.id);
+    }
+  } catch (caught) {
+    await admin.from("payments").update({ status: "failed" }).eq("id", data.id);
+    throw caught;
+  }
+
   return {
     paymentId: data.id,
     reference,
     checkoutUrl,
     provider,
+    status: "pending",
   };
 }
 

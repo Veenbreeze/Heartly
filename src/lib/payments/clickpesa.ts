@@ -150,6 +150,58 @@ export async function createClickPesaCheckout(
   return url;
 }
 
+export async function initiateClickPesaUssdPush(input: {
+  amount: number;
+  orderReference: string;
+  phoneNumber: string;
+}): Promise<{ id: string; status: string }> {
+  const token = await getAccessToken();
+  const body = {
+    amount: String(input.amount),
+    currency: "TZS" as const,
+    orderReference: input.orderReference,
+    phoneNumber: input.phoneNumber,
+  };
+  const response = await fetch(
+    `${API_BASE}/payments/initiate-ussd-push-request`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        "client-id": process.env.CLICKPESA_CLIENT_ID!.trim(),
+      },
+      body: JSON.stringify({ ...body, checksum: checksumFor(body) }),
+      cache: "no-store",
+    },
+  );
+  const result = (await response.json().catch(() => ({}))) as {
+    id?: unknown;
+    status?: unknown;
+    message?: unknown;
+  };
+  if (!response.ok) {
+    const reason = typeof result.message === "string" ? result.message : "";
+    throw new Error(`CLICKPESA_PUSH_FAILED:${response.status}:${reason.slice(0, 100)}`);
+  }
+  if (typeof result.id !== "string") throw new Error("CLICKPESA_PUSH_RESPONSE_INVALID");
+  return { id: result.id, status: typeof result.status === "string" ? result.status : "PROCESSING" };
+}
+
+export async function queryClickPesaPayment(reference: string) {
+  const token = await getAccessToken();
+  const response = await fetch(
+    `${API_BASE}/payments/${encodeURIComponent(reference)}`,
+    { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
+  );
+  if (!response.ok) return null;
+  const value = (await response.json()) as unknown;
+  const item = Array.isArray(value) ? value[0] : value;
+  if (!item || typeof item !== "object") return null;
+  const status = (item as { status?: unknown }).status;
+  return typeof status === "string" ? status.toLowerCase() : null;
+}
+
 export function clickpesaIsConfigured() {
   return clickpesaConfigured();
 }

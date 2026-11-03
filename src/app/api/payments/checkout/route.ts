@@ -8,7 +8,8 @@ import type { Plan } from "@/lib/types";
 
 const checkoutSchema = z.object({
   planCode: z.literal("premium"),
-  currency: z.enum(["TZS", "USD"]).default("TZS"),
+  currency: z.literal("TZS").default("TZS"),
+  phoneNumber: z.string().trim().min(9).max(18),
 });
 
 export async function POST(request: Request) {
@@ -23,6 +24,15 @@ export async function POST(request: Request) {
   if (error) return apiError(error, 400);
   const parsed = checkoutSchema.safeParse(body);
   if (!parsed.success) return apiError("Choose a valid plan and currency", 400);
+  const digits = parsed.data.phoneNumber.replace(/[\s()+-]/g, "");
+  const phoneNumber = digits.startsWith("0")
+    ? `255${digits.slice(1)}`
+    : digits.startsWith("255")
+      ? digits
+      : `255${digits}`;
+  if (!/^255[67]\d{8}$/.test(phoneNumber)) {
+    return apiError("Enter a valid Tanzanian mobile number", 400);
+  }
 
   const admin = getAdminClient();
   if (!admin) return apiError("Payments are not configured yet", 503);
@@ -39,12 +49,14 @@ export async function POST(request: Request) {
     const checkout = await createCheckout({
       userId: user.id,
       plan: plan as Plan,
-      currency: parsed.data.currency,
+      currency: "TZS",
+      phoneNumber,
     });
     return apiOk({
       url: checkout.checkoutUrl,
       reference: checkout.reference,
       provider: checkout.provider,
+      status: checkout.status,
     });
   } catch (caught) {
     const code = caught instanceof Error ? caught.message : "UNKNOWN";
@@ -53,6 +65,12 @@ export async function POST(request: Request) {
     });
     if (code === "PLAN_NOT_PURCHASABLE") {
       return apiError("That plan cannot be purchased right now", 400);
+    }
+    if (code === "CLICKPESA_USSD_TZS_ONLY") {
+      return apiError("Mobile money phone prompts are available for TZS payments", 400);
+    }
+    if (code.startsWith("CLICKPESA_PUSH_FAILED:400")) {
+      return apiError("ClickPesa could not use that phone number. Check it and try again.", 400);
     }
     return apiError("Could not start checkout. Please try again.", 502);
   }
