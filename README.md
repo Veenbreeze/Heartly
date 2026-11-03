@@ -79,6 +79,8 @@ Migrations live in `supabase/migrations`:
 2. `20261031000200_rls.sql` enables Row Level Security and grants.
 3. `20261031000300_storage.sql` configures Storage buckets and policies.
 4. `20261031000400_seed.sql` adds categories, templates, plans, and settings.
+5. `20261103000100_more_templates.sql` adds the expanded animated template
+   catalogue.
 
 Reset the local database with `npm run db:reset`. The seed section in
 `supabase/config.toml` is intentionally disabled because starter data is created
@@ -185,6 +187,12 @@ Protect `master` in GitHub and require the `Typecheck, lint, unit tests`,
 later want deployments gated by CI, disable Vercel's automatic Git deployments
 and add a `deploy` job that runs the Vercel CLI with `VERCEL_TOKEN`,
 `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` repository secrets.
+
+## Known gaps
+
+`docs/UNIMPLEMENTED.md` records features that are mocked, deferred, or require
+external credentials (live ClickPesa payments, optional Resend email, video
+uploads, self-service data export, and similar).
 
 ## Project layout
 

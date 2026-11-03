@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Crown, Search, SlidersHorizontal, X } from "lucide-react";
 import { TemplateCard } from "@/components/templates/template-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { Category, Template } from "@/lib/types";
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 interface TemplateGalleryProps {
   categories: Category[];
@@ -51,7 +54,16 @@ export function TemplateGallery({
 
   return (
     <div>
-      <div className="rounded-3xl border border-line bg-white/70 p-4 shadow-soft backdrop-blur">
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose">The collection</p>
+          <h2 className="mt-2 font-display text-3xl text-plum sm:text-4xl">A lovely place to start.</h2>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">Choose a design, then add the little details that make it yours.</p>
+        </div>
+        <p className="hidden rounded-2xl border border-line/70 bg-white/75 px-4 py-3 text-sm text-ink-soft shadow-sm sm:block">Every design is made to be personalised <span className="ml-1 text-rose">✦</span></p>
+      </div>
+
+      <div className="rounded-[1.75rem] border border-line/80 bg-white/80 p-4 shadow-soft backdrop-blur sm:p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-soft/60" />
@@ -81,13 +93,15 @@ export function TemplateGallery({
                   key={value}
                   type="button"
                   onClick={() => setTier(value)}
+                  aria-pressed={tier === value}
                   className={cn(
-                    "rounded-full px-3 py-1.5 text-xs font-medium capitalize transition",
+                    "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-medium capitalize transition",
                     tier === value
-                      ? "bg-white text-plum shadow-sm"
+                      ? "bg-white text-plum shadow-sm ring-1 ring-line/70"
                       : "text-ink-soft hover:text-plum",
                   )}
                 >
+                  {value === "premium" ? <Crown className="size-3 text-amber-600" /> : null}
                   {value}
                 </button>
               ))}
@@ -98,6 +112,7 @@ export function TemplateGallery({
           <button
             type="button"
             onClick={() => setCategory("all")}
+            aria-pressed={category === "all"}
             className={cn(
               "whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition",
               category === "all"
@@ -112,6 +127,7 @@ export function TemplateGallery({
               key={row.id}
               type="button"
               onClick={() => setCategory(row.slug)}
+              aria-pressed={category === row.slug}
               className={cn(
                 "whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition",
                 category === row.slug
@@ -127,7 +143,7 @@ export function TemplateGallery({
 
       <div className="mt-6 flex items-center justify-between gap-4">
         <p className="text-sm text-ink-soft">
-          {filtered.length} {filtered.length === 1 ? "template" : "templates"}
+          Showing <span className="font-semibold text-plum">{filtered.length}</span> {filtered.length === 1 ? "design" : "designs"}
         </p>
         {hasFilters ? (
           <Button variant="ghost" size="sm" onClick={reset}>
@@ -137,15 +153,28 @@ export function TemplateGallery({
       </div>
 
       {filtered.length ? (
-        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((template) => (
-            <TemplateCard
-              key={template.id}
-              template={template}
-              categories={categories}
-            />
-          ))}
-        </div>
+        <motion.div
+          layout
+          className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          <AnimatePresence mode="popLayout">
+            {filtered.map((template) => (
+              <motion.div
+                key={template.id}
+                layout
+                initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.35, ease: EASE }}
+              >
+                <TemplateCard
+                  template={template}
+                  categories={categories}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       ) : (
         <div className="mt-4 rounded-3xl border border-dashed border-petal bg-white/50 px-6 py-16 text-center">
           <p className="font-display text-xl text-plum">No templates match that yet.</p>

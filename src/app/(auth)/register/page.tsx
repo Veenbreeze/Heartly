@@ -17,13 +17,14 @@ export default async function RegisterPage({
   const params = await searchParams;
   return (
     <div>
-      <h1 className="text-balance text-3xl leading-tight text-plum sm:text-4xl">
-        Create something they will keep.
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-rose">Start with a feeling</p>
+      <h1 className="text-balance font-display text-4xl leading-[1.08] tracking-tight text-plum sm:text-5xl">
+        Make a little moment of your own.
       </h1>
-      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-        Free to start. No card required. Your first gift can be live in minutes.
+      <p className="mt-3 text-sm leading-relaxed text-ink-soft sm:text-base">
+        Create your free account and turn a message, a memory, or a big question into a gift they can open anywhere.
       </p>
-      <div className="mt-7">
+      <div className="mt-8">
         <RegisterForm next={params.next} />
       </div>
       <p className="mt-7 text-center text-sm text-ink-soft">

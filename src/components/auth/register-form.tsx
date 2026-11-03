@@ -15,11 +15,11 @@ export function RegisterForm({ next }: { next?: string }) {
   return (
     <div className="space-y-5">
       <form action={signInWithGoogleAction}>
-        <Button type="submit" variant="outline" className="w-full">
+        <Button type="submit" variant="outline" className="h-12 w-full rounded-2xl border-[#e9ded8] bg-white text-plum shadow-sm hover:bg-[#fbf6f1]">
           <Globe /> Continue with Google
         </Button>
       </form>
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-ink-soft/60">
+      <div className="flex items-center gap-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft/55">
         <span className="h-px flex-1 bg-line" />
         or create an account
         <span className="h-px flex-1 bg-line" />
@@ -27,6 +27,25 @@ export function RegisterForm({ next }: { next?: string }) {
       <form action={formAction} className="space-y-4" noValidate>
         <input type="hidden" name="next" value={next ?? "/dashboard"} />
         <FormMessage state={state} />
+        <label className="flex items-start gap-2.5 rounded-xl border border-[#eee5df] bg-[#fbf8f5] p-3.5 text-xs leading-relaxed text-ink-soft">
+          <input
+            type="checkbox"
+            name="terms"
+            required
+            className="mt-0.5 size-4 shrink-0 rounded border-line accent-rose"
+          />
+          <span>
+            I agree to the{" "}
+            <a href="/legal/terms" className="underline hover:text-rose">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="/legal/privacy" className="underline hover:text-rose">
+              Privacy Policy
+            </a>
+            .
+          </span>
+        </label>
         <div>
           <Label htmlFor="fullName">Your name</Label>
           <Input
@@ -34,7 +53,7 @@ export function RegisterForm({ next }: { next?: string }) {
             name="fullName"
             autoComplete="name"
             placeholder="Amani Joseph"
-            className="mt-2"
+            className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
             aria-invalid={Boolean(state.fieldErrors?.fullName)}
             required
           />
@@ -48,7 +67,7 @@ export function RegisterForm({ next }: { next?: string }) {
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className="mt-2"
+            className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
             aria-invalid={Boolean(state.fieldErrors?.email)}
             required
           />
@@ -63,7 +82,7 @@ export function RegisterForm({ next }: { next?: string }) {
               type="password"
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              className="mt-2"
+              className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
               aria-invalid={Boolean(state.fieldErrors?.password)}
               minLength={8}
               required
@@ -78,7 +97,7 @@ export function RegisterForm({ next }: { next?: string }) {
               type="password"
               autoComplete="new-password"
               placeholder="Repeat password"
-              className="mt-2"
+              className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
               aria-invalid={Boolean(state.fieldErrors?.confirmPassword)}
               minLength={8}
               required
@@ -86,26 +105,7 @@ export function RegisterForm({ next }: { next?: string }) {
             <FieldError message={state.fieldErrors?.confirmPassword} />
           </div>
         </div>
-        <label className="flex items-start gap-2.5 text-xs leading-relaxed text-ink-soft">
-          <input
-            type="checkbox"
-            name="terms"
-            required
-            className="mt-0.5 size-4 rounded border-line accent-rose"
-          />
-          <span>
-            I agree to the{" "}
-            <a href="/legal/terms" className="underline hover:text-rose">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="/legal/privacy" className="underline hover:text-rose">
-              Privacy Policy
-            </a>
-            .
-          </span>
-        </label>
-        <SubmitButton pendingLabel="Creating account…">
+        <SubmitButton className="h-12 rounded-xl" pendingLabel="Creating account…">
           Create my account
         </SubmitButton>
       </form>

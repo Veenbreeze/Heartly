@@ -379,8 +379,11 @@ const animationLabels: Record<AnimationType, string> = {
   hearts: "Rising hearts",
   stars: "Night stars",
   sparkles: "Sparkles",
-  waves: "Waves",
-  candles: "Candles",
+  waves: "Ocean waves",
+  candles: "Candlelight",
+  butterflies: "Butterflies",
+  bubbles: "Rising bubbles",
+  snow: "Soft snow",
 };
 
 const basicAnimations: AnimationType[] = ["none", "fade", "float"];
@@ -400,7 +403,7 @@ export function DesignPanel({
 
   return (
     <div className="space-y-5">
-      <PanelSection title="Palette" description="Start from a mood, then fine-tune the colours.">
+      <PanelSection title="Palette" description="Start from a mood, then adjust the colours.">
         <div className="grid grid-cols-5 gap-2">
           {palettes.map((palette) => (
             <button

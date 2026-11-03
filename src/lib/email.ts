@@ -1,4 +1,5 @@
 import { emailConfigured } from "@/lib/env";
+import { SITE_EMAIL_FROM } from "@/lib/site";
 
 export interface TransactionalEmail {
   to: string | null | undefined;
@@ -35,8 +36,7 @@ export async function sendTransactionalEmail({
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) return false;
-  const from =
-    process.env.EMAIL_FROM?.trim() || "Heartly <hello@heartly.example>";
+  const from = SITE_EMAIL_FROM;
 
   try {
     const response = await fetch("https://api.resend.com/emails", {

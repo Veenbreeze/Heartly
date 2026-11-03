@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Terms of service",
   description: "The rules for using Heartly to create, share and receive digital gifts.",
 };
 
-const supportEmail =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@heartly.example";
+const supportEmail = SITE_SUPPORT_EMAIL;
 
 export default function TermsPage() {
   return (
@@ -100,7 +100,7 @@ export default function TermsPage() {
       <section className="space-y-3">
         <h2 className="font-display text-2xl text-plum">Disclaimers</h2>
         <p>
-          Heartly is provided on an as-is and as-available basis. To the extent
+        Heartly is provided as it is and as available. To the extent
           permitted by law, we exclude implied warranties and are not liable for
           indirect or consequential loss. Nothing in these terms limits rights
           that cannot legally be excluded.
@@ -113,7 +113,7 @@ export default function TermsPage() {
           You may stop using Heartly at any time and ask us to delete your
           account. We may suspend or end access if these terms are broken or if
           the service is discontinued. Provisions that by their nature should
-          survive, including content licences for already-shared gifts and
+          survive, including content licences for gifts already shared and
           liability terms, will survive.
         </p>
       </section>

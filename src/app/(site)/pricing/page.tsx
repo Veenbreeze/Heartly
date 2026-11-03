@@ -94,7 +94,7 @@ export default async function PricingPage() {
               Start free. Go Premium when it matters.
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-pretty text-lg leading-relaxed text-ink-soft">
-              Every gift starts with a free account-free link. Premium gives you
+              Every gift starts with a free account and a free link. Premium gives you
               the whole studio: every template, music, scheduling and more.
             </p>
           </div>

@@ -95,6 +95,56 @@ export function AnimationLayer({ type, intensity, accent }: AnimationLayerProps)
           ))
         : null}
 
+      {type === "butterflies"
+        ? items.map((index) => (
+            <Heart
+              key={index}
+              className="absolute fill-current opacity-0"
+              style={{
+                left: `${pseudo(index, 35) * 100}%`,
+                top: "-10%",
+                color: accent,
+                width: `${10 + pseudo(index, 36) * 14}px`,
+                animation: `flutter ${9 + pseudo(index, 37) * 9}s linear ${pseudo(index, 38) * 8}s infinite`,
+              }}
+            />
+          ))
+        : null}
+
+      {type === "bubbles"
+        ? items.map((index) => (
+            <span
+              key={index}
+              className="absolute rounded-full border opacity-0"
+              style={{
+                left: `${pseudo(index, 39) * 100}%`,
+                bottom: "-10%",
+                width: `${10 + pseudo(index, 40) * 26}px`,
+                height: `${10 + pseudo(index, 40) * 26}px`,
+                borderColor: accent,
+                background: `${accent}22`,
+                animation: `bubble ${9 + pseudo(index, 41) * 9}s linear ${pseudo(index, 42) * 8}s infinite`,
+              }}
+            />
+          ))
+        : null}
+
+      {type === "snow"
+        ? items.map((index) => (
+            <span
+              key={index}
+              className="absolute rounded-full bg-white opacity-0"
+              style={{
+                left: `${pseudo(index, 43) * 100}%`,
+                top: "-8%",
+                width: `${4 + pseudo(index, 44) * 7}px`,
+                height: `${4 + pseudo(index, 44) * 7}px`,
+                animation: `snowfall ${8 + pseudo(index, 45) * 8}s linear ${pseudo(index, 46) * 8}s infinite`,
+              }}
+            />
+          ))
+        : null}
+
       {type === "confetti"
         ? items.map((index) => (
             <span

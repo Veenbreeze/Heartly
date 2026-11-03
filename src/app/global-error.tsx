@@ -40,10 +40,17 @@ export default function GlobalError({
               borderRadius: 20,
               background: "#fce7ef",
               color: "#e85d75",
-              fontSize: 30,
             }}
           >
-            ♥
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M12 21s-7-4.35-9.5-8.5C.5 9 2.5 5 6.5 5c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 4 0 6 4 4 7.5C19 16.65 12 21 12 21z" />
+            </svg>
           </div>
           <h1 style={{ marginTop: 28, fontSize: 36, lineHeight: 1.1 }}>
             Heartly could not load.

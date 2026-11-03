@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" fill="none">
+  <defs>
+    <radialGradient id="rose" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(290 240) rotate(38) scale(460 460)">
+      <stop stop-color="#F3C6D3" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#F3C6D3" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gold" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1330 330) rotate(132) scale(520 520)">
+      <stop stop-color="#F7E7C7" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#F7E7C7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="plum" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(860 1030) rotate(-54) scale(540 540)">
+      <stop stop-color="#E9D8E5" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#E9D8E5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="#FFF9F7"/>
+  <rect width="1600" height="1200" fill="url(#rose)"/>
+  <rect width="1600" height="1200" fill="url(#gold)"/>
+  <rect width="1600" height="1200" fill="url(#plum)"/>
+  <g stroke="#E85D75" stroke-opacity="0.14" stroke-width="2">
+    <path d="M245 620c-26-32-76-10-70 26 6 33 48 59 70 79 22-20 64-46 70-79 6-36-44-58-70-26Z"/>
+    <path d="M1290 760c-18-23-54-7-50 19 4 23 34 42 50 56 16-14 46-33 50-56 4-26-32-42-50-19Z"/>
+    <path d="M980 180c-13-16-38-5-35 13 3 16 24 30 35 39 11-9 32-23 35-39 3-18-22-29-35-13Z"/>
+  </g>
+  <g fill="#E85D75" fill-opacity="0.16">
+    <circle cx="420" cy="860" r="5"/>
+    <circle cx="1120" cy="470" r="4"/>
+    <circle cx="1470" cy="890" r="6"/>
+    <circle cx="150" cy="420" r="4"/>
+    <circle cx="760" cy="250" r="3"/>
+  </g>
+</svg>

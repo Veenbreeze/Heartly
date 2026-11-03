@@ -3,16 +3,10 @@ import { Bell, Plus } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/site/mobile-nav";
+import { MainNav } from "@/components/site/main-nav";
 import { UserMenu } from "@/components/site/user-menu";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-
-const links = [
-  { href: "/explore", label: "Explore gifts" },
-  { href: "/categories", label: "Categories" },
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/pricing", label: "Pricing" },
-];
 
 async function unreadCount(userId: string | undefined): Promise<number> {
   if (!userId) return 0;
@@ -33,20 +27,10 @@ export async function SiteHeader() {
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "Friend";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-cream/85 backdrop-blur-xl">
-      <div className="container-page flex h-[73px] items-center justify-between gap-6">
-        <Logo size="sm" />
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-full px-3.5 py-2 text-sm text-ink-soft transition hover:bg-blush/70 hover:text-plum"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+    <header className="sticky top-0 z-40 border-b border-[#ece2dc] bg-[#fffdfa]/95 backdrop-blur-xl">
+      <div className="container-page flex h-[82px] items-center justify-between gap-3 lg:gap-6">
+        <Logo size="default" className="shrink-0" />
+        <MainNav />
         <div className="flex items-center gap-2 sm:gap-3">
           {user ? (
             <>
@@ -88,6 +72,7 @@ export async function SiteHeader() {
           <MobileNav signedIn={Boolean(user)} />
         </div>
       </div>
+      <span className="pointer-events-none absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-[#dba5a0]/55 to-transparent" />
     </header>
   );
 }

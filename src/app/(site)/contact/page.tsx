@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { SITE_SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -20,8 +21,7 @@ export const metadata: Metadata = {
     "Questions about a gift, a payment or your account? Get in touch with the Heartly team.",
 };
 
-const supportEmail =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@heartly.example";
+const supportEmail = SITE_SUPPORT_EMAIL;
 
 const reasons = [
   {

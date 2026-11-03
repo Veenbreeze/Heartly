@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Refund policy",
   description: "When and how Heartly can refund a Premium payment.",
 };
 
-const supportEmail =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@heartly.example";
+const supportEmail = SITE_SUPPORT_EMAIL;
 
 export default function RefundsPage() {
   return (
@@ -26,7 +26,7 @@ export default function RefundsPage() {
         <h2 className="font-display text-2xl text-plum">Our approach</h2>
         <p>
           Heartly Premium is a digital service that unlocks immediately after
-          payment. Because access begins straight away, change-of-mind refunds are
+          payment. Because access begins straight away, refunds for a change of mind are
           not automatic. We will always review genuine problems fairly.
         </p>
       </section>

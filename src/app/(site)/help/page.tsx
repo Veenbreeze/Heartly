@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { SITE_SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Help centre",
@@ -19,8 +20,7 @@ export const metadata: Metadata = {
     "Answers for editing gifts, sharing links, passwords, billing and reporting content on Heartly.",
 };
 
-const supportEmail =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@heartly.example";
+const supportEmail = SITE_SUPPORT_EMAIL;
 
 const topics = [
   {

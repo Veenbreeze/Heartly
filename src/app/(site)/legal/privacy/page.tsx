@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_SUPPORT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy policy",
@@ -7,8 +8,7 @@ export const metadata: Metadata = {
     "How Heartly collects, uses, stores and protects your personal information.",
 };
 
-const supportEmail =
-  process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "hello@heartly.example";
+const supportEmail = SITE_SUPPORT_EMAIL;
 
 export default function PrivacyPage() {
   return (
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
         <h2 className="font-display text-2xl text-plum">Gift visibility</h2>
         <p>
           Public gifts may be visible on our explore pages. Unlisted and
-          password-protected gifts are not indexed by search engines and are only
+          gifts protected by a password are not indexed by search engines and are only
           served after our access checks. Anyone with an unlisted link can open
           that gift, so share links carefully.
         </p>
@@ -122,7 +122,7 @@ export default function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="font-display text-2xl text-plum">Security</h2>
         <p>
-          We use access controls, encrypted connections and server-side checks to
+          We use access controls, encrypted connections and checks on our servers to
           protect your information. No service can promise perfect security, but
           we work to limit access to personal data and to respond quickly to
           issues.
@@ -132,8 +132,8 @@ export default function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="font-display text-2xl text-plum">Cookies</h2>
         <p>
-          We use cookies for sign-in sessions, guest gift ownership and
-          password-protected gift access. See our{" "}
+          We use cookies for sign in sessions, guest gift ownership and
+          access to gifts protected by a password. See our{" "}
           <Link href="/legal/cookies" className="font-medium text-rose hover:underline">
             cookie policy
           </Link>{" "}

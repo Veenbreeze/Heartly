@@ -27,7 +27,7 @@ const steps = [
   {
     icon: Palette,
     title: "Choose a feeling",
-    body: "Start with a design for a birthday, love letter, invitation, thank-you or surprise. Every template is a starting point, not a cage.",
+        body: "Start with a design for a birthday, love letter, invitation, thank you or surprise. Every template is a starting point, not a cage.",
     details: ["12 occasion-led categories", "Free and Premium designs", "Preview before you commit"],
   },
   {
@@ -58,7 +58,7 @@ const details = [
   {
     icon: Smartphone,
     title: "Made for the phone",
-    body: "Most links are opened on a phone, so every template is designed mobile-first and tested on small screens.",
+        body: "Most links are opened on a phone, so every template is designed for mobile and tested on small screens.",
   },
   {
     icon: Share2,
@@ -133,7 +133,7 @@ export default function HowItWorksPage() {
                   you for being one of them.
                 </p>
                 <span className="mt-8 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-soft">
-                  <Link2 className="size-3 text-rose" /> heartly.link/for-you
+                  <Link2 className="size-3 text-rose" /> heartly.link / your gift
                 </span>
               </div>
             </div>

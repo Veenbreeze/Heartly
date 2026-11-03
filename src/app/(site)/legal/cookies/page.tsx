@@ -24,8 +24,8 @@ export default function CookiesPage() {
         <p>
           Cookies are small files stored by your browser. Heartly uses them to
           keep you signed in, remember guest gifts and allow access to
-          password-protected gifts. We do not use advertising or cross-site
-          tracking cookies.
+          gifts protected by a password. We do not use advertising or tracking
+          cookies across sites.
         </p>
       </section>
 
@@ -42,7 +42,7 @@ export default function CookiesPage() {
             </thead>
             <tbody>
               <tr className="border-b border-line/70">
-                <td className="px-4 py-3 text-plum">Sign-in session</td>
+                <td className="px-4 py-3 text-plum">Sign in session</td>
                 <td className="px-4 py-3">Essential</td>
                 <td className="px-4 py-3">Session or refresh period</td>
               </tr>
@@ -52,7 +52,7 @@ export default function CookiesPage() {
                 <td className="px-4 py-3">Up to 1 year</td>
               </tr>
               <tr>
-                <td className="px-4 py-3 text-plum">Password-protected gift access</td>
+                <td className="px-4 py-3 text-plum">Access to gifts protected by a password</td>
                 <td className="px-4 py-3">Essential</td>
                 <td className="px-4 py-3">6 hours</td>
               </tr>
@@ -62,7 +62,7 @@ export default function CookiesPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-2xl text-plum">Third-party services</h2>
+        <h2 className="font-display text-2xl text-plum">Services from other providers</h2>
         <p>
           Our authentication and database provider, Supabase, sets cookies needed
           to keep you signed in. Payment provider ClickPesa may set cookies during
@@ -75,8 +75,8 @@ export default function CookiesPage() {
         <h2 className="font-display text-2xl text-plum">Managing cookies</h2>
         <p>
           You can block or delete cookies in your browser settings. Blocking
-          essential cookies will prevent sign-in, guest gift access and
-          password-protected gifts from working. Because we do not use optional
+          essential cookies will prevent sign in, guest gift access and
+          gifts protected by a password from working. Because we do not use optional
           advertising cookies, there is no marketing consent banner.
         </p>
       </section>

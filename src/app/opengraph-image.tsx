@@ -57,11 +57,12 @@ export default function OpengraphImage() {
               borderRadius: 26,
               background: "linear-gradient(135deg, #e85d75, #603b59)",
               color: "#ffffff",
-              fontSize: 52,
               boxShadow: "0 22px 44px -18px rgba(232, 93, 117, 0.8)",
             }}
           >
-            ♥
+            <svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21s-7-4.35-9.5-8.5C.5 9 2.5 5 6.5 5c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 4 0 6 4 4 7.5C19 16.65 12 21 12 21z" />
+            </svg>
           </div>
           <div style={{ fontSize: 44, fontWeight: 600, letterSpacing: -1 }}>
             Heartly

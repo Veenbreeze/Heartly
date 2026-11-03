@@ -25,11 +25,11 @@ export function LoginForm({ next, setup }: { next?: string; setup?: boolean }) {
         </div>
       ) : null}
       <form action={signInWithGoogleAction}>
-        <Button type="submit" variant="outline" className="w-full">
+        <Button type="submit" variant="outline" className="h-12 w-full rounded-2xl border-[#e9ded8] bg-white text-plum shadow-sm hover:bg-[#fbf6f1]">
           <Globe /> Continue with Google
         </Button>
       </form>
-      <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-ink-soft/60">
+      <div className="flex items-center gap-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-soft/55">
         <span className="h-px flex-1 bg-line" />
         or with email
         <span className="h-px flex-1 bg-line" />
@@ -45,7 +45,7 @@ export function LoginForm({ next, setup }: { next?: string; setup?: boolean }) {
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className="mt-2"
+            className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
             aria-invalid={Boolean(emailError)}
             required
           />
@@ -67,13 +67,13 @@ export function LoginForm({ next, setup }: { next?: string; setup?: boolean }) {
             type="password"
             autoComplete="current-password"
             placeholder="Your password"
-            className="mt-2"
+            className="mt-2 h-12 rounded-xl border-[#e7dcd5] bg-[#fdfbf9] px-4 placeholder:text-ink-soft/45 focus-visible:bg-white"
             aria-invalid={Boolean(passwordError)}
             required
           />
           <FieldError message={passwordError} />
         </div>
-        <SubmitButton pendingLabel="Signing in…">Log in</SubmitButton>
+        <SubmitButton className="h-12 rounded-xl" pendingLabel="Signing in…">Log in</SubmitButton>
       </form>
     </div>
   );

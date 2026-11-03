@@ -268,7 +268,7 @@ on conflict (id) do update set
 insert into public.platform_settings (key, value, description)
 values
   ('site_name', '"Heartly"'::jsonb, 'Public product name'),
-  ('support_email', '"support@heartly.example"'::jsonb, 'Support inbox shown on the contact page'),
+  ('support_email', '"support@heartly.app"'::jsonb, 'Support inbox shown on the contact page'),
   ('default_currency', '"TZS"'::jsonb, 'Default display currency'),
   ('default_timezone', '"Africa/Dar_es_Salaam"'::jsonb, 'Timezone used for local date presentation'),
   ('maintenance_mode', 'false'::jsonb, 'When true, the marketing site shows a maintenance notice'),

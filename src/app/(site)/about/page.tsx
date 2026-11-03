@@ -39,7 +39,7 @@ const values = [
   {
     icon: Users,
     title: "Made for real life",
-    body: "Birthdays, long-distance love, quick thank-yous and big questions. Heartly is built around actual moments.",
+        body: "Birthdays, love across distance, quick thank yous and big questions. Heartly is built around actual moments.",
   },
 ];
 
@@ -69,7 +69,7 @@ export default function AboutPage() {
             <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-ink-soft">
               Heartly exists for the moment you want to say something meaningful
               but do not have hours to design it. We make beautiful digital gifts
-              that feel personal, not mass-produced.
+              that feel personal, not mass produced.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -122,8 +122,8 @@ export default function AboutPage() {
             </p>
             <p>
               We are building the product we wanted for our own birthdays,
-              anniversaries, apologies, thank-yous and just-because days — with
-              mobile money, local pricing and a mobile-first experience from the
+              anniversaries, apologies, thank yous and days for no special reason — with
+              mobile money, local pricing and an experience designed for mobile from the
               start.
             </p>
           </div>

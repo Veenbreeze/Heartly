@@ -28,6 +28,9 @@ export const ANIMATION_TYPES = [
   "sparkles",
   "waves",
   "candles",
+  "butterflies",
+  "bubbles",
+  "snow",
 ] as const;
 
 export type AnimationType = (typeof ANIMATION_TYPES)[number];
