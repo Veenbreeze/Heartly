@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { PaymentStatus } from "@/components/payments/payment-status";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
+import { getAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Payment status · Heartly",
@@ -14,10 +15,30 @@ export const metadata: Metadata = {
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ reference?: string }>;
+  searchParams: Promise<{
+    reference?: string;
+    orderReference?: string;
+    order_reference?: string;
+  }>;
 }) {
-  const { reference } = await searchParams;
+  const params = await searchParams;
   const user = await getCurrentUser();
+  let reference = params.reference ?? params.orderReference ?? params.order_reference;
+  if (!reference && user) {
+    const admin = getAdminClient();
+    if (admin) {
+      const { data } = await admin
+        .from("payments")
+        .select("provider_reference")
+        .eq("user_id", user.id)
+        .eq("provider", "clickpesa")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      reference = data?.provider_reference ?? undefined;
+    }
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-cream px-5 py-12">

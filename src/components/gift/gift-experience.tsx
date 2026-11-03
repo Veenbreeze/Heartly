@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { AnimationLayer } from "@/components/gift/animation-layer";
 import { ReportGift } from "@/components/gift/report-gift";
+import { ShareGiftCard } from "@/components/gift/share-gift-card";
 import { useAmbientMusic } from "@/components/gift/use-ambient-music";
 import type { GiftContent, TemplateType } from "@/lib/gift/schema";
 import { cn } from "@/lib/utils";
@@ -140,6 +141,12 @@ export function GiftExperience({
             transition={{ duration: 0.45 }}
             className="relative z-10 flex min-h-screen flex-col items-center justify-center px-5 py-16 text-center"
           >
+            {!preview ? (
+              <Link href="/" className="absolute inset-x-5 top-5 mx-auto flex w-fit items-center gap-2 rounded-full border border-black/10 bg-white/65 px-4 py-2 text-sm font-semibold backdrop-blur" aria-label="Heartly home">
+                <Heart className="size-4" style={{ color: theme.accent }} fill="currentColor" fillOpacity={0.2} />
+                Heartly
+              </Link>
+            ) : null}
             <motion.div
               initial={{ y: 18, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -192,6 +199,17 @@ export function GiftExperience({
             transition={{ duration: 0.55 }}
             className={cn("relative z-10 mx-auto flex w-full max-w-3xl flex-col px-5 py-12 sm:px-8 sm:py-16", preview ? "min-h-full" : "min-h-screen")}
           >
+            {!preview ? (
+              <div className="-mx-5 mb-8 flex items-center justify-between border-b border-black/10 px-5 pb-4 sm:mx-0 sm:px-0">
+                <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold" aria-label="Heartly home">
+                  <span className="flex size-9 items-center justify-center rounded-full" style={{ backgroundColor: `${theme.accent}20`, color: theme.accent }}>
+                    <Heart className="size-4" fill="currentColor" fillOpacity={0.2} />
+                  </span>
+                  Heartly
+                </Link>
+                <span className="text-xs opacity-60">A keepsake for {content.recipientName || "you"}</span>
+              </div>
+            ) : null}
             <div className="flex flex-1 flex-col justify-center">
               <motion.header
                 initial={{ y: 16, opacity: 0 }}
@@ -515,6 +533,17 @@ export function GiftExperience({
                     </>
                   )}
                 </motion.section>
+              ) : null}
+
+              {!preview && (content.title || content.message) ? (
+                <ShareGiftCard
+                  title={content.title || "A little something for you"}
+                  message={content.message || "A thoughtful moment, made just for you."}
+                  senderName={content.senderName}
+                  background={theme.background}
+                  accent={theme.accent}
+                  text={theme.text}
+                />
               ) : null}
 
               <footer className="mt-14 text-center">

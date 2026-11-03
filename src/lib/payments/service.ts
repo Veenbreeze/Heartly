@@ -47,7 +47,8 @@ export async function createCheckout({
   const amount = planAmount(plan, currency);
   if (amount <= 0) throw new Error("PLAN_NOT_PURCHASABLE");
 
-  const reference = `HTL-${Date.now().toString(36).toUpperCase()}-${randomBytes(4).toString("hex").toUpperCase()}`;
+  // ClickPesa accepts alphanumeric order references only.
+  const reference = `HTL${Date.now().toString(36).toUpperCase()}${randomBytes(6).toString("hex").toUpperCase()}`;
   const checkoutUrl =
     provider === "clickpesa"
       ? await createClickPesaCheckout({
@@ -55,7 +56,7 @@ export async function createCheckout({
           currency,
           orderReference: reference,
           description: `${plan.name} · Heartly`,
-          callbackUrl: `${siteUrl()}/checkout/success?reference=${encodeURIComponent(reference)}`,
+          callbackUrl: `${siteUrl()}/api/payments/webhook/clickpesa`,
         })
       : `/checkout/mock/${encodeURIComponent(reference)}`;
 

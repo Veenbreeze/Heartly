@@ -83,7 +83,9 @@ export async function signUpAction(
   }
 
   if (!data.session) {
-    redirect(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
+    redirect(
+      `/verify-email?email=${encodeURIComponent(parsed.data.email)}&next=${encodeURIComponent(next)}`,
+    );
   }
 
   redirect(next);
@@ -318,6 +320,47 @@ export async function resendVerificationAction(
   }
   return {
     status: "success",
-    message: "If that email needs confirmation, a new link is on its way.",
+    message: "If that email needs confirmation, a new six digit code is on its way.",
   };
+}
+
+const verifySignupOtpSchema = z.object({
+  email: z.string().trim().email("Enter a valid email").max(254),
+  token: z.string().trim().regex(/^\d{6}$/, "Enter the six digit code from your email"),
+  next: z.string().optional(),
+});
+
+export async function verifySignupOtpAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  if (!isSupabaseConfigured()) return setupState();
+  const parsed = verifySignupOtpSchema.safeParse({
+    email: stringValue(formData, "email"),
+    token: stringValue(formData, "token"),
+    next: stringValue(formData, "next"),
+  });
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Enter the six digit code sent to your email.",
+      fieldErrors: fieldErrors(parsed.error),
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return setupState();
+  const { error } = await supabase.auth.verifyOtp({
+    email: parsed.data.email,
+    token: parsed.data.token,
+    type: "signup",
+  });
+  if (error) {
+    return {
+      status: "error",
+      message: "That code is invalid or has expired. Request a new code and try again.",
+    };
+  }
+
+  redirect(safeRedirectPath(parsed.data.next, "/dashboard"));
 }

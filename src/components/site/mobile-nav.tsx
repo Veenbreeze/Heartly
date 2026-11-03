@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, BookOpenText, CalendarHeart, CircleHelp, Compass, Menu, X } from "lucide-react";
+import { ArrowRight, BookOpenText, CalendarHeart, CircleHelp, Compass, Menu, Shield, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ const links = [
   { href: "/pricing", label: "Plans & pricing", note: "See what you can make for free", icon: CircleHelp },
 ];
 
-export function MobileNav({ signedIn }: { signedIn: boolean }) {
+export function MobileNav({ signedIn, isAdmin = false }: { signedIn: boolean; isAdmin?: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -81,6 +81,11 @@ export function MobileNav({ signedIn }: { signedIn: boolean }) {
                 </Button>
               )}
             </div>
+            {isAdmin ? (
+              <Link href="/admin" onClick={() => setOpen(false)} className="mt-4 inline-flex items-center gap-2 px-1 text-sm font-semibold text-plum">
+                <Shield className="size-4 text-rose" /> Open administration
+              </Link>
+            ) : null}
           </div>
         </div>
       ) : null}

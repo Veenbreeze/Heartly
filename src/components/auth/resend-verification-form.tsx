@@ -35,7 +35,7 @@ export function ResendVerificationForm({ email }: { email?: string }) {
         <FieldError message={state.fieldErrors?.email} />
       </div>
       <SubmitButton pendingLabel="Sending…">
-        Resend confirmation email
+        Resend six digit code
       </SubmitButton>
     </form>
   );

@@ -57,7 +57,7 @@ const faqs = [
   {
     question: "How do payments work?",
     answer:
-      "Payments are handled securely through ClickPesa, including mobile money and card checkout. Heartly never stores your mobile money PIN or full card number.",
+      "Pay securely through ClickPesa by M-Pesa, HaloPesa, Airtel Money, Mixx by Yas, or card where enabled. Heartly never asks for or stores your mobile money PIN or full card number.",
   },
 ];
 

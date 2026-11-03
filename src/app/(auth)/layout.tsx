@@ -14,8 +14,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center py-5 sm:py-12 lg:py-8">
-          <div className="w-full max-w-md rounded-[2rem] border border-[#efe5de] bg-white p-5 shadow-[0_28px_80px_-42px_rgba(54,36,42,0.35)] sm:p-8 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-            {children}
+          <div className="relative w-full max-w-md overflow-hidden rounded-[3rem_3rem_3rem_1rem] border border-[#efe5de] bg-white p-5 shadow-[0_28px_80px_-42px_rgba(54,36,42,0.35)] before:pointer-events-none before:absolute before:-right-16 before:-top-20 before:size-48 before:rounded-full before:bg-blush/70 before:content-[''] after:pointer-events-none after:absolute after:-bottom-24 after:-left-16 after:size-44 after:rounded-full after:bg-[#f8eee9] after:content-[''] sm:p-8 lg:rounded-[3.5rem_3.5rem_3.5rem_1rem] lg:border-[#efe5de] lg:bg-white/65 lg:p-8 lg:shadow-[0_28px_80px_-42px_rgba(54,36,42,0.35)]">
+            <div className="relative z-10">{children}</div>
           </div>
         </div>
         <p className="mx-auto max-w-md text-center text-[11px] leading-relaxed text-ink-soft/80">

@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     template: "%s · Heartly",
   },
   description:
-    "Create beautiful digital gifts with music, photos, animations, and a personal message. Send a little joy in a link — no wrapping paper required.",
+    "Create beautiful digital gifts with music, photos, animations, and a personal message. Send a little joy in a link, no wrapping paper required.",
   applicationName: "Heartly",
   keywords: [
     "digital gifts",

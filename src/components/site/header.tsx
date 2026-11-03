@@ -69,7 +69,7 @@ export async function SiteHeader() {
               </Button>
             </>
           )}
-          <MobileNav signedIn={Boolean(user)} />
+          <MobileNav signedIn={Boolean(user)} isAdmin={profile?.role === "admin"} />
         </div>
       </div>
       <span className="pointer-events-none absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-[#dba5a0]/55 to-transparent" />

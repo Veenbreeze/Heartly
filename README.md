@@ -58,9 +58,9 @@ Open <http://localhost:3000>.
 | `PAYMENT_PROVIDER` | Yes | `mock` locally, `clickpesa` in production |
 | `PAYMENT_WEBHOOK_SECRET` | Mock only | Signs simulated webhook payloads |
 | `ALLOW_MOCK_PAYMENTS` | No | Set to `true` to enable simulated payments in production; leave unset in production |
-| `CLICKPESA_CLIENT_ID` | Production | ClickPesa application client ID |
-| `CLICKPESA_API_KEY` | Production | ClickPesa API key |
-| `CLICKPESA_CHECKSUM_KEY` | Production | Signs API payloads and webhook callbacks |
+| `CLICKPESA_CLIENT_ID` | Production | Hosted application client ID from ClickPesa Developers |
+| `CLICKPESA_API_KEY` | Production | Hosted application API key from ClickPesa Developers |
+| `CLICKPESA_CHECKSUM_KEY` | Production | Checksum secret configured for the ClickPesa application |
 | `CLICKPESA_API_BASE_URL` | Production | ClickPesa API base URL |
 | `RESEND_API_KEY` | No | Enables transactional email delivery |
 | `EMAIL_FROM` | No | Sender identity for transactional email |
@@ -145,10 +145,31 @@ server actions, API routes, middleware, and Supabase SSR.
    `NEXT_PUBLIC_SITE_URL` to the final HTTPS origin.
 4. Deploy with `vercel deploy --prod`, or push to `master` if the Git
    integration is connected.
-5. Configure custom SMTP (Authentication → Emails → SMTP). The built-in email
-   service is heavily rate limited and only reaches project team members, so it
-   cannot deliver signup confirmation emails to real users. Until SMTP is set
-   up, disable "Confirm email" for testing.
+5. Configure the six digit confirmation email:
+   - In EmailJS, connect a verified sender service and create an email template.
+     Set **To Email** to `{{to_email}}`, **Subject** to `{{email_subject}}`, and
+     include `{{otp_code}}`, `{{action_label}}`, and `{{action_url}}` in the body.
+   - Copy `supabase/functions/.env.example` to
+     `supabase/functions/.env`, then fill in `EMAILJS_SERVICE_ID`,
+     `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY`, `EMAILJS_PRIVATE_KEY`, and
+     `SEND_EMAIL_HOOK_SECRET`.
+   - In Supabase, enable email confirmation and keep the email OTP length at 6.
+     Under **Authentication → Hooks**, configure **Send Email** to
+     `https://<project-ref>.supabase.co/functions/v1/send-auth-email`. Generate
+     a hook secret and use that same value for `SEND_EMAIL_HOOK_SECRET`.
+   - Link the project, upload the Edge Function secrets, and deploy the
+     function:
+
+     ```bash
+     supabase link --project-ref <project-ref>
+     supabase secrets set --env-file supabase/functions/.env
+     supabase functions deploy send-auth-email --no-verify-jwt
+     ```
+
+     The hook verifies Supabase's signed request before sending through EmailJS.
+     EmailJS's private key stays in Edge Function secrets and is never sent to
+     the browser. Local Supabase has six digit confirmations enabled in
+     `supabase/config.toml` and captures email in its local inbox.
 6. Promote the first administrator after signing up (the app never grants admin
    through the UI):
 
@@ -161,9 +182,24 @@ server actions, API routes, middleware, and Supabase SSR.
 7. Optionally set `RESEND_API_KEY` and `EMAIL_FROM` to enable reply, publish,
    and payment notification emails. Delivery is best effort and never blocks
    the underlying action.
-8. Before taking real payments, configure ClickPesa: set `PAYMENT_PROVIDER` to
-   `clickpesa`, add the ClickPesa credentials, point the webhook at
-   `/api/payments/webhook/clickpesa`, and remove `ALLOW_MOCK_PAYMENTS`.
+8. Configure ClickPesa mobile money:
+   - Create and verify a ClickPesa merchant account. Complete KYC and enable
+     the collection channels you want to offer.
+   - In **Settings → Developers**, create a **Hosted** application with
+     **Hosted Checkout** enabled. Set its Return URL to
+     `https://<your-domain>/checkout/success`.
+   - Copy the application **Client ID** and **API Key** into their server
+     environment variables. Set `CLICKPESA_CHECKSUM_KEY` to the application's
+     checksum secret. Keep these values private.
+   - Configure the application's `PAYMENT RECEIVED` and `PAYMENT FAILED`
+     webhooks as `https://<your-domain>/api/payments/webhook/clickpesa`.
+     Each checkout also sends its success callback to this endpoint.
+   - Set `PAYMENT_PROVIDER=clickpesa`, set `NEXT_PUBLIC_SITE_URL` to the
+     deployed HTTPS origin, and remove `ALLOW_MOCK_PAYMENTS`. Hosted checkout
+     shows the ClickPesa channels activated for the merchant, including M-Pesa,
+     HaloPesa, Airtel Money, and Mixx by Yas when available.
+   - Test with a low value real payment after the account and channels are
+     approved. ClickPesa documents production testing rather than a sandbox.
 
 The current demo deployment uses `PAYMENT_PROVIDER=mock` and
 `ALLOW_MOCK_PAYMENTS=true` so checkout can be tested without live ClickPesa

@@ -110,7 +110,7 @@ export interface ClickPesaCheckoutInput {
   currency: "TZS" | "USD";
   orderReference: string;
   description: string;
-  callbackUrl: string;
+  callbackUrl?: string;
 }
 
 export async function createClickPesaCheckout(
@@ -118,12 +118,13 @@ export async function createClickPesaCheckout(
 ): Promise<string> {
   const token = await getAccessToken();
   const body = {
-    totalPrice: input.amount,
+    totalPrice: String(input.amount),
     orderReference: input.orderReference,
     orderCurrency: input.currency,
     description: input.description,
-    callbackUrl: input.callbackUrl,
+    ...(input.callbackUrl ? { callbackUrl: input.callbackUrl } : {}),
   };
+  const payload = { ...body, checksum: checksumFor(body) };
 
   const response = await fetch(`${API_BASE}/checkout-link/generate-checkout-url`, {
     method: "POST",
@@ -131,9 +132,8 @@ export async function createClickPesaCheckout(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       "client-id": process.env.CLICKPESA_CLIENT_ID!.trim(),
-      checksum: checksumFor(body),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
     cache: "no-store",
   });
 
@@ -141,8 +141,8 @@ export async function createClickPesaCheckout(
     throw new Error(`CLICKPESA_CHECKOUT_FAILED:${response.status}`);
   }
 
-  const data: unknown = await response.json();
-  const url = findCheckoutUrl(data);
+  const data = (await response.json()) as { checkoutLink?: unknown };
+  const url = findCheckoutUrl(data.checkoutLink ?? data);
   if (!url) throw new Error("CLICKPESA_CHECKOUT_URL_MISSING");
   return url;
 }

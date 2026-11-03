@@ -65,7 +65,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: https://heartly-veenbreezes-projects.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://heartly-ashy.vercel.app
 
   e2e:
     name: Playwright (chromium)

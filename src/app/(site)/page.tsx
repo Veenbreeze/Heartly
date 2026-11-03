@@ -33,7 +33,7 @@ const steps = [
   {
     icon: Palette,
     title: "Choose a feeling",
-    body: "Pick a template that matches the moment — a birthday, a love letter, a question, or a surprise.",
+    body: "Pick a template that matches the moment a birthday, a love letter, a question, or a surprise.",
   },
   {
     icon: Wand2,
@@ -121,7 +121,7 @@ export default async function HomePage() {
             </h1>
             <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-ink-soft">
               Create a beautiful digital gift with your own message, photos,
-              music, and animation. Share it in seconds — and give someone a
+              music, and animation. Share it in seconds and give someone a
               moment they will want to open again.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">

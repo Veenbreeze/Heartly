@@ -61,14 +61,18 @@ export async function POST(request: Request) {
   const eventType =
     stringValue(payload.eventType) ??
     stringValue(payload.event_type) ??
+    stringValue(payload.event) ??
     stringValue(payload.type) ??
     status ??
     "clickpesa.webhook";
-  const eventId =
+  const providerEventId =
     stringValue(payload.id) ??
+    stringValue(nested.id) ??
     stringValue(payload.eventId) ??
-    stringValue(payload.event_id) ??
-    `${reference ?? "unknown"}:${status}:${stringValue(nested.updatedAt) ?? Date.now()}`;
+    stringValue(payload.event_id);
+  const eventId = providerEventId
+    ? `${providerEventId}:${eventType}:${status}`
+    : `${reference ?? "unknown"}:${eventType}:${status}:${stringValue(nested.updatedAt) ?? Date.now()}`;
 
   const { data: existing } = await admin
     .from("payment_events")
