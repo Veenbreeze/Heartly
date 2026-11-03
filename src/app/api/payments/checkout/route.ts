@@ -48,6 +48,9 @@ export async function POST(request: Request) {
     });
   } catch (caught) {
     const code = caught instanceof Error ? caught.message : "UNKNOWN";
+    console.error("Payment checkout initialization failed", {
+      reason: code.replace(/[^a-zA-Z0-9_.:-]/g, "").slice(0, 100),
+    });
     if (code === "PLAN_NOT_PURCHASABLE") {
       return apiError("That plan cannot be purchased right now", 400);
     }

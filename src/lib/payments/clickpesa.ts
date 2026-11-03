@@ -80,7 +80,10 @@ async function getAccessToken(): Promise<string> {
     token?: string;
     data?: { token?: string; accessToken?: string };
   };
-  const token = data.token ?? data.data?.token ?? data.data?.accessToken;
+  const tokenValue = data.token ?? data.data?.token ?? data.data?.accessToken;
+  if (!tokenValue) throw new Error("CLICKPESA_TOKEN_MISSING");
+  // ClickPesa returns the token with its Bearer prefix already attached.
+  const token = tokenValue.replace(/^Bearer\s+/i, "").trim();
   if (!token) throw new Error("CLICKPESA_TOKEN_MISSING");
 
   cachedToken = { token, expiresAt: Date.now() + 55 * 60_000 };
