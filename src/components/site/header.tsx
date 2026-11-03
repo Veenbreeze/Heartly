@@ -61,6 +61,16 @@ export async function SiteHeader() {
             </>
           ) : (
             <>
+              <div className="flex items-center gap-1.5 sm:hidden">
+                <Button asChild variant="ghost" size="sm" className="h-9 px-2.5 text-xs">
+                  <Link href="/login">Log in</Link>
+                </Button>
+                <Button asChild size="sm" className="h-9 rounded-xl px-3 text-xs">
+                  <Link href="/create">
+                    <Plus className="size-3.5" /> Start
+                  </Link>
+                </Button>
+              </div>
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Link href="/login">Log in</Link>
               </Button>
