@@ -11,14 +11,21 @@ import {
   SubmitButton,
 } from "@/components/auth/form-parts";
 
-export function ResendVerificationForm({ email }: { email?: string }) {
+export function ResendVerificationForm({
+  email,
+  next,
+}: {
+  email?: string;
+  next?: string;
+}) {
   const [state, formAction] = useActionState(
     resendVerificationAction,
     initialActionState,
   );
 
   return (
-    <form action={formAction} className="mt-7 space-y-4 text-left" noValidate>
+    <form action={formAction} className="space-y-4 text-left" noValidate>
+      <input type="hidden" name="next" value={next ?? "/dashboard"} />
       <FormMessage state={state} />
       <div>
         <Label htmlFor="resend-email">Email</Label>
@@ -35,7 +42,7 @@ export function ResendVerificationForm({ email }: { email?: string }) {
         <FieldError message={state.fieldErrors?.email} />
       </div>
       <SubmitButton pendingLabel="Sending…">
-        Resend six digit code
+        Resend confirmation email
       </SubmitButton>
     </form>
   );

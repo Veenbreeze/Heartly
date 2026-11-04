@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MailCheck } from "lucide-react";
 import { ResendVerificationForm } from "@/components/auth/resend-verification-form";
-import { VerifySignupForm } from "@/components/auth/verify-signup-form";
 
 export const metadata: Metadata = {
   title: "Check your email",
@@ -12,9 +11,9 @@ export const metadata: Metadata = {
 export default async function VerifyEmailPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string; next?: string }>;
+  searchParams: Promise<{ email?: string; next?: string; notice?: string }>;
 }) {
-  const { email, next } = await searchParams;
+  const { email, next, notice } = await searchParams;
 
   return (
     <div className="text-center">
@@ -24,20 +23,31 @@ export default async function VerifyEmailPage({
       <h1 className="mt-6 text-balance text-3xl leading-tight text-plum sm:text-4xl">
         One quick check.
       </h1>
+      {notice === "unconfirmed" ? (
+        <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-800">
+          Your email is not confirmed yet. Open the confirmation link we sent you,
+          or resend it below.
+        </div>
+      ) : null}
       <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-        We sent a six digit confirmation code to{" "}
+        We sent a confirmation link to{" "}
         {email ? <span className="font-medium text-plum">{email}</span> : "your email"}.
-        Enter it below to confirm your Heartly account.
+        Open it to activate your Heartly account.
       </p>
-      <VerifySignupForm email={email} next={next} />
-      <div className="mt-6 border-t border-line pt-5">
-        <p className="text-xs text-ink-soft">Need another code?</p>
-        <ResendVerificationForm email={email} />
+      <div className="mt-7 rounded-2xl border border-line bg-[#fbf8f5] px-5 py-5 text-left">
+        <p className="text-sm font-medium text-plum">Check your inbox</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">
+          The link expires in 1 hour. If it is not there, check your spam folder,
+          or send a fresh one.
+        </p>
+        <div className="mt-4 border-t border-line pt-4">
+          <ResendVerificationForm email={email} next={next} />
+        </div>
       </div>
       <p className="mt-6 text-xs text-ink-soft">
-        Did not get it? Check spam, or{" "}
+        Already confirmed?{" "}
         <Link href="/login" className="underline hover:text-rose">
-          try logging in
+          Log in
         </Link>
         .
       </p>

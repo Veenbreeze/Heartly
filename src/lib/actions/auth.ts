@@ -123,6 +123,12 @@ export async function signInAction(
     password: parsed.data.password,
   });
   if (error) {
+    if (/email not confirmed/i.test(error.message)) {
+      const next = safeRedirectPath(parsed.data.next, "/dashboard");
+      redirect(
+        `/verify-email?email=${encodeURIComponent(parsed.data.email)}&next=${encodeURIComponent(next)}&notice=unconfirmed`,
+      );
+    }
     return {
       status: "error",
       message:
@@ -296,11 +302,14 @@ export async function resendVerificationAction(
 ): Promise<ActionState> {
   if (!isSupabaseConfigured()) return setupState();
   const parsed = z
-    .string()
-    .trim()
-    .email("Enter a valid email")
-    .max(254)
-    .safeParse(stringValue(formData, "email"));
+    .object({
+      email: z.string().trim().email("Enter a valid email").max(254),
+      next: z.string().optional(),
+    })
+    .safeParse({
+      email: stringValue(formData, "email"),
+      next: stringValue(formData, "next"),
+    });
   if (!parsed.success) {
     return {
       status: "error",
@@ -310,10 +319,13 @@ export async function resendVerificationAction(
   }
   const supabase = await createSupabaseServerClient();
   if (!supabase) return setupState();
+  const next = safeRedirectPath(parsed.data.next, "/dashboard");
   const { error } = await supabase.auth.resend({
     type: "signup",
-    email: parsed.data,
-    options: { emailRedirectTo: `${siteUrl()}/auth/callback` },
+    email: parsed.data.email,
+    options: {
+      emailRedirectTo: `${siteUrl()}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
   });
   if (error?.status === 429) {
     return {
@@ -323,7 +335,8 @@ export async function resendVerificationAction(
   }
   return {
     status: "success",
-    message: "If that email needs confirmation, a new six digit code is on its way.",
+    message:
+      "If that email needs confirmation, a new confirmation link is on its way.",
   };
 }
 
