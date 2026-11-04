@@ -75,11 +75,29 @@ export async function POST(request: Request) {
       return apiError("Mobile money phone prompts are available for TZS payments", 400);
     }
     if (code.startsWith("CLICKPESA_PUSH_FAILED:400")) {
-      const reason = code.replace(/^CLICKPESA_PUSH_FAILED:400:?/, "");
-      if (/phone number/i.test(reason)) {
+      const reason = code.replace(/^CLICKPESA_PUSH_FAILED:400:?/, "").trim();
+      if (/insufficient|balance|top\s*up|no\s*funds|not\s*enough/i.test(reason)) {
+        return apiError(
+          "Your mobile money balance is too low for this payment. Top up and try again.",
+          400,
+        );
+      }
+      if (/phone\s*number|invalid\s*number|msisdn/i.test(reason)) {
         return apiError("ClickPesa could not use that phone number. Check it and try again.", 400);
       }
-      if (/COLLECTION_API/i.test(reason)) {
+      if (/not\s*registered|not\s*found|inactive|blocked/i.test(reason)) {
+        return apiError(
+          "That mobile money account could not be used. Check the number and network, then try again.",
+          400,
+        );
+      }
+      if (/operator|network|not\s*supported|unsupported/i.test(reason)) {
+        return apiError(
+          "That network is not available for this payment. Choose another network and try again.",
+          400,
+        );
+      }
+      if (/COLLECTION_API|no\s*payment\s*collection\s*methods|no\s*valid\s*payment\s*method/i.test(reason)) {
         return apiError("Mobile money prompts are not enabled on the payment account.", 503);
       }
       return apiError("ClickPesa rejected that payment request. Check your details and try again.", 400);
