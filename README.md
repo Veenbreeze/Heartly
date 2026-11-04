@@ -203,8 +203,9 @@ server actions, API routes, middleware, and Supabase SSR.
 9. Configure ClickPesa mobile money:
    - Create and verify a ClickPesa merchant account. Complete KYC and enable
      the collection channels you want to offer.
-   - In **Settings → Developers**, create a **Hosted** application with
-     **Hosted Checkout** enabled. Set its Return URL to
+   - In **Settings → Developers**, create an **API** application and enable the
+     **Collection API** feature so Heartly can send mobile money prompts. Also
+     enable **Hosted Checkout** as a fallback and set its Return URL to
      `https://<your-domain>/checkout/success`.
    - Copy the application **Client ID** and **API Key** into their server
      environment variables. Set `CLICKPESA_CHECKSUM_KEY` to the application's
@@ -213,9 +214,11 @@ server actions, API routes, middleware, and Supabase SSR.
      webhooks as `https://<your-domain>/api/payments/webhook/clickpesa`.
      Each checkout also sends its success callback to this endpoint.
    - Set `PAYMENT_PROVIDER=clickpesa`, set `NEXT_PUBLIC_SITE_URL` to the
-     deployed HTTPS origin, and remove `ALLOW_MOCK_PAYMENTS`. Hosted checkout
-     shows the ClickPesa channels activated for the merchant, including M-Pesa,
-     HaloPesa, Airtel Money, and Mixx by Yas when available.
+     deployed HTTPS origin, and remove `ALLOW_MOCK_PAYMENTS`. Mobile money
+     prompts use the channels activated for the merchant, including M-Pesa,
+     HaloPesa, Airtel Money, and Mixx by Yas when available. If the application
+     does not have Collection API access, Heartly falls back to hosted checkout
+     automatically, where the customer can pay with mobile money or card.
    - Test with a low value real payment after the account and channels are
      approved. ClickPesa documents production testing rather than a sandbox.
 

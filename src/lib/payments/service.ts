@@ -1,8 +1,11 @@
 import { randomBytes } from "node:crypto";
 import { getAdminClient } from "@/lib/supabase/admin";
-import { initiateClickPesaUssdPush } from "@/lib/payments/clickpesa";
+import {
+  createClickPesaCheckout,
+  initiateClickPesaUssdPush,
+} from "@/lib/payments/clickpesa";
 import { paymentProviderName } from "@/lib/env";
-import { formatMoney, absoluteUrl } from "@/lib/utils";
+import { formatMoney, absoluteUrl, siteUrl } from "@/lib/utils";
 import { sendTransactionalEmail } from "@/lib/email";
 import type { Payment, Plan, Subscription } from "@/lib/types";
 
@@ -83,17 +86,43 @@ export async function createCheckout({
   let checkoutUrl: string | null = null;
   try {
     if (provider === "clickpesa") {
-      const push = await initiateClickPesaUssdPush({ amount, orderReference: reference, phoneNumber });
-      await admin.from("payments").update({
-        metadata: {
-          plan_code: plan.code,
-          plan_name: plan.name,
-          billing_interval: plan.billing_interval,
-          initiated_at: new Date().toISOString(),
-          provider_transaction_id: push.id,
-          provider_status: push.status,
-        },
-      }).eq("id", data.id);
+      try {
+        const push = await initiateClickPesaUssdPush({ amount, orderReference: reference, phoneNumber });
+        await admin.from("payments").update({
+          metadata: {
+            plan_code: plan.code,
+            plan_name: plan.name,
+            billing_interval: plan.billing_interval,
+            initiated_at: new Date().toISOString(),
+            provider_transaction_id: push.id,
+            provider_status: push.status,
+          },
+        }).eq("id", data.id);
+      } catch (caught) {
+        const message = caught instanceof Error ? caught.message : "";
+        // Collection API is a separate ClickPesa application feature. When it is
+        // unavailable, fall back to hosted checkout so upgrades still work.
+        if (!/COLLECTION_API|no payment collection methods|no valid payment method/i.test(message)) {
+          throw caught;
+        }
+        checkoutUrl = await createClickPesaCheckout({
+          amount,
+          currency,
+          orderReference: reference,
+          description: `${plan.name} · Heartly`,
+          callbackUrl: `${siteUrl()}/api/payments/webhook/clickpesa`,
+        });
+        await admin.from("payments").update({
+          checkout_url: checkoutUrl,
+          metadata: {
+            plan_code: plan.code,
+            plan_name: plan.name,
+            billing_interval: plan.billing_interval,
+            initiated_at: new Date().toISOString(),
+            checkout_mode: "hosted",
+          },
+        }).eq("id", data.id);
+      }
     } else {
       checkoutUrl = `/checkout/mock/${encodeURIComponent(reference)}`;
       await admin.from("payments").update({ checkout_url: checkoutUrl }).eq("id", data.id);

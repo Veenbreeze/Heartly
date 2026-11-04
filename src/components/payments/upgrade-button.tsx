@@ -80,6 +80,10 @@ export function UpgradeButton({
       if (!response.ok || !data.ok || !data.reference) {
         throw new Error(data.error ?? "Could not start checkout.");
       }
+      if (data.url) {
+        window.location.assign(data.url);
+        return;
+      }
       setReference(data.reference);
       setPaymentStatus("pending");
       toast.success("Payment request sent. Check your phone.");

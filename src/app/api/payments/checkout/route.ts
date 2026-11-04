@@ -70,7 +70,14 @@ export async function POST(request: Request) {
       return apiError("Mobile money phone prompts are available for TZS payments", 400);
     }
     if (code.startsWith("CLICKPESA_PUSH_FAILED:400")) {
-      return apiError("ClickPesa could not use that phone number. Check it and try again.", 400);
+      const reason = code.replace(/^CLICKPESA_PUSH_FAILED:400:?/, "");
+      if (/phone number/i.test(reason)) {
+        return apiError("ClickPesa could not use that phone number. Check it and try again.", 400);
+      }
+      if (/COLLECTION_API/i.test(reason)) {
+        return apiError("Mobile money prompts are not enabled on the payment account.", 503);
+      }
+      return apiError("ClickPesa rejected that payment request. Check your details and try again.", 400);
     }
     return apiError("Could not start checkout. Please try again.", 502);
   }
