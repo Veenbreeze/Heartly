@@ -99,7 +99,7 @@ export function UpgradeButton({
     return <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center text-sm text-emerald-800"><CheckCircle2 className="mx-auto mb-2 size-6" />Payment confirmed. Premium is active.</div>;
   }
   if (reference && paymentStatus !== "failed") {
-    return <div className="rounded-2xl border border-line bg-white/80 p-4 text-center"><Clock3 className="mx-auto size-5 text-rose" /><p className="mt-2 text-sm font-medium text-ink">Approve the request on your phone</p><p className="mt-1 text-xs leading-relaxed text-ink-soft">Enter your mobile money PIN in the ClickPesa prompt to complete payment.</p><p className="mt-2 text-[10px] text-ink-soft">Waiting for confirmation…</p></div>;
+    return <div className="rounded-2xl border border-line bg-white/80 p-4 text-center"><Clock3 className="mx-auto size-5 text-rose" /><p className="mt-2 text-sm font-medium text-ink">Enter the PIN in your phone to confirm payment</p><p className="mt-1 text-xs leading-relaxed text-ink-soft">A mobile money prompt has been sent to your phone. Approve it there to complete the payment.</p><p className="mt-2 text-[10px] text-ink-soft">Waiting for confirmation…</p></div>;
   }
   return (
     <form className="space-y-3" onSubmit={(event) => { event.preventDefault(); void checkout(); }}>
