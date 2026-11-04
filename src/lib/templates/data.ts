@@ -88,7 +88,7 @@ export async function getCategoryWithTemplates(slug: string) {
   };
 }
 
-export function getFallbackPlan(code: "free" | "premium"): Plan {
+export function getFallbackPlan(code: string): Plan {
   return (
     fallbackPlans.find((plan) => plan.code === code) ?? fallbackPlans[0]
   );

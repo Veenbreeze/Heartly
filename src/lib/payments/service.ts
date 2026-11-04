@@ -40,11 +40,13 @@ export async function createCheckout({
   plan,
   currency,
   phoneNumber,
+  network,
 }: {
   userId: string;
   plan: Plan;
   currency: "TZS" | "USD";
   phoneNumber: string;
+  network?: string;
 }): Promise<CheckoutResult> {
   const admin = getAdminClient();
   if (!admin) throw new Error("DATABASE_NOT_CONFIGURED");
@@ -75,6 +77,7 @@ export async function createCheckout({
         plan_code: plan.code,
         plan_name: plan.name,
         billing_interval: plan.billing_interval,
+        network: network ?? null,
         initiated_at: new Date().toISOString(),
       },
     })
@@ -93,6 +96,7 @@ export async function createCheckout({
             plan_code: plan.code,
             plan_name: plan.name,
             billing_interval: plan.billing_interval,
+            network: network ?? null,
             initiated_at: new Date().toISOString(),
             provider_transaction_id: push.id,
             provider_status: push.status,
@@ -118,6 +122,7 @@ export async function createCheckout({
             plan_code: plan.code,
             plan_name: plan.name,
             billing_interval: plan.billing_interval,
+            network: network ?? null,
             initiated_at: new Date().toISOString(),
             checkout_mode: "hosted",
           },

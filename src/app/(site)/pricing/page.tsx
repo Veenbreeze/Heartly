@@ -10,32 +10,36 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { UpgradeButton } from "@/components/payments/upgrade-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { getCurrentProfile, getCurrentUser, getEntitlements } from "@/lib/auth";
+import { getCurrentUser, getEntitlements } from "@/lib/auth";
 import { getCatalogue } from "@/lib/templates/data";
 import { formatMoney } from "@/lib/utils";
+import type { Plan } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Start free, then unlock every template, music, scheduled delivery, QR codes and more with Heartly Premium.",
+    "Start free, then choose a Heartly Premium plan from TZS 3,000 to TZS 15,000 per month.",
 };
 
-const comparison = [
-  { feature: "Active gifts", free: "3", premium: "100" },
-  { feature: "Photos per gift", free: "3", premium: "20" },
-  { feature: "Premium templates", free: false, premium: true },
-  { feature: "Background music", free: false, premium: true },
-  { feature: "Advanced animations", free: false, premium: true },
-  { feature: "Scheduled delivery", free: false, premium: true },
-  { feature: "Password protection", free: false, premium: true },
-  { feature: "Gift expiry", free: true, premium: true },
-  { feature: "QR codes", free: false, premium: true },
-  { feature: "Advanced analytics", free: false, premium: true },
-  { feature: "Remove Heartly branding", free: false, premium: true },
+const comparisonFeatures: Array<{
+  feature: string;
+  free: string | boolean;
+  key?: keyof Plan["limits"];
+}> = [
+  { feature: "Active gifts", free: "3", key: "max_active_gifts" },
+  { feature: "Photos per gift", free: "3", key: "max_media" },
+  { feature: "Premium templates", free: false, key: "premium_templates" },
+  { feature: "Background music", free: false, key: "music" },
+  { feature: "Advanced animations", free: false, key: "advanced_animation" },
+  { feature: "Scheduled delivery", free: false, key: "scheduled_delivery" },
+  { feature: "Password protection", free: false, key: "password_protection" },
+  { feature: "Gift expiry", free: true, key: "gift_expiry" },
+  { feature: "QR codes", free: false, key: "qr_code" },
+  { feature: "Advanced analytics", free: false, key: "advanced_analytics" },
+  { feature: "Remove Heartly branding", free: false, key: "remove_branding" },
 ];
 
 const faqs = [
@@ -47,36 +51,159 @@ const faqs = [
   {
     question: "What happens when I upgrade?",
     answer:
-      "Premium unlocks immediately after payment is confirmed. You keep every gift you have already made, and all Premium features apply to new and existing gifts.",
+      "Premium unlocks immediately after payment is confirmed. You keep every gift you have already made, and your new limits apply straight away.",
   },
   {
-    question: "Can I cancel at any time?",
+    question: "Can I change my plan later?",
     answer:
-      "Yes. Cancel from your billing page whenever you like. Your Premium features stay active until the end of the paid period.",
+      "Yes. Choose another plan from this page whenever you like. The new plan starts when the new payment is confirmed.",
   },
   {
     question: "How do payments work?",
     answer:
-      "Enter your mobile money number and approve the ClickPesa prompt with your wallet PIN. Premium mobile money charges are collected in Tanzanian shillings. Heartly never asks for or stores your PIN.",
+      "Choose a plan, enter your mobile money number, select your network, then approve the ClickPesa prompt with your wallet PIN. Heartly never asks for or stores your PIN.",
   },
 ];
 
+function premiumValue(plan: Plan, key: keyof Plan["limits"]) {
+  const value = plan.limits[key];
+  if (typeof value === "number") return value.toLocaleString("en-TZ");
+  return Boolean(value);
+}
+
+function PlanCard({
+  plan,
+  signedIn,
+  highlight,
+  current,
+}: {
+  plan: Plan;
+  signedIn: boolean;
+  highlight?: boolean;
+  current?: boolean;
+}) {
+  return (
+    <article
+      className={
+        highlight
+          ? "relative flex flex-col overflow-hidden rounded-[2rem] border border-plum/10 bg-plum p-6 text-white shadow-lift"
+          : "flex flex-col rounded-[2rem] border border-line bg-white/75 p-6 shadow-soft"
+      }
+    >
+      {highlight ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-rose/30 blur-3xl"
+        />
+      ) : null}
+      <div className="relative flex items-start justify-between gap-2">
+        <div>
+          <p
+            className={
+              highlight
+                ? "text-xs font-semibold uppercase tracking-[0.2em] text-petal"
+                : "text-xs font-semibold uppercase tracking-[0.2em] text-rose"
+            }
+          >
+            {plan.name}
+          </p>
+          <p
+            className={
+              highlight
+                ? "mt-2 font-display text-3xl"
+                : "mt-2 font-display text-3xl text-plum"
+            }
+          >
+            {formatMoney(plan.price_tzs, "TZS")}
+            <span
+              className={
+                highlight
+                  ? "ml-1 font-sans text-xs text-white/60"
+                  : "ml-1 font-sans text-xs text-ink-soft"
+              }
+            >
+              / month
+            </span>
+          </p>
+        </div>
+        <span
+          className={
+            highlight
+              ? "flex size-10 shrink-0 items-center justify-center rounded-2xl bg-white/15"
+              : "flex size-10 shrink-0 items-center justify-center rounded-2xl bg-blush text-rose"
+          }
+        >
+          <Crown className="size-4" />
+        </span>
+      </div>
+      <p
+        className={
+          highlight
+            ? "relative mt-3 text-xs leading-relaxed text-white/65"
+            : "mt-3 text-xs leading-relaxed text-ink-soft"
+        }
+      >
+        {plan.description}
+      </p>
+      <ul className="relative mt-5 flex-1 space-y-2.5">
+        {plan.features.map((feature) => (
+          <li
+            key={feature}
+            className={
+              highlight
+                ? "flex items-start gap-2 text-xs text-white/85"
+                : "flex items-start gap-2 text-xs text-ink-soft"
+            }
+          >
+            <span
+              className={
+                highlight
+                  ? "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-white/15"
+                  : "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-blush text-rose"
+              }
+            >
+              <Check className="size-2.5" />
+            </span>
+            {feature}
+          </li>
+        ))}
+      </ul>
+      {current ? (
+        <Button
+          asChild
+          variant={highlight ? "secondary" : "outline"}
+          className={highlight ? "mt-6 w-full bg-white text-plum hover:bg-blush" : "mt-6 w-full"}
+        >
+          <Link href="/dashboard/billing">Current plan</Link>
+        </Button>
+      ) : (
+        <Button
+          asChild
+          variant={highlight ? "secondary" : "default"}
+          className={highlight ? "mt-6 w-full bg-white text-plum hover:bg-blush" : "mt-6 w-full"}
+        >
+          <Link
+            href={
+              signedIn
+                ? `/checkout/${plan.code}`
+                : `/register?next=${encodeURIComponent(`/checkout/${plan.code}`)}`
+            }
+          >
+            Choose plan <ArrowRight />
+          </Link>
+        </Button>
+      )}
+    </article>
+  );
+}
+
 export default async function PricingPage() {
-  const [{ plans }, user, profile] = await Promise.all([
-    getCatalogue(),
-    getCurrentUser(),
-    getCurrentProfile(),
-  ]);
+  const [{ plans }, user] = await Promise.all([getCatalogue(), getCurrentUser()]);
   const entitlements = await getEntitlements(user?.id);
-  const premium = plans.find((plan) => plan.code === "premium");
   const free = plans.find((plan) => plan.code === "free");
-  const currency = profile?.currency === "USD" ? "USD" : "TZS";
-  const premiumPrice = premium
-    ? currency === "USD"
-      ? formatMoney(premium.price_usd_cents, "USD")
-      : formatMoney(premium.price_tzs, "TZS")
-    : formatMoney(15000, "TZS");
-  const premiumUsd = premium ? formatMoney(premium.price_usd_cents, "USD") : "$5.99";
+  const premiumPlans = plans
+    .filter((plan) => plan.limits.tier === "premium" && plan.price_tzs > 0)
+    .sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <>
@@ -94,103 +221,57 @@ export default async function PricingPage() {
               Start free. Go Premium when it matters.
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-pretty text-lg leading-relaxed text-ink-soft">
-              Every gift starts with a free account and a free link. Premium gives you
-              the whole studio: every template, music, scheduling and more.
+              Every gift starts with a free account and a free link. Premium plans
+              start at TZS 3,000 per month and add every template, music, scheduling
+              and more.
             </p>
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-4xl gap-5 md:grid-cols-2">
-            <article className="flex flex-col rounded-[2rem] border border-line bg-white/75 p-6 shadow-soft sm:p-8">
-              <div className="flex items-center justify-between gap-3">
+          <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <article className="flex flex-col rounded-[2rem] border border-line bg-white/75 p-6 shadow-soft">
+              <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose">
                     Free
                   </p>
-                  <h2 className="mt-2 font-display text-3xl text-plum">
-                    A gentle place to start
-                  </h2>
-                </div>
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-blush text-rose">
-                  <Heart className="size-5" />
-                </span>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-                {free?.description ??
-                  "Everything you need to send a thoughtful digital gift."}
-              </p>
-              <p className="mt-6 font-display text-5xl text-plum">
-                Free
-                <span className="ml-1 font-sans text-sm text-ink-soft">forever</span>
-              </p>
-              <ul className="mt-6 flex-1 space-y-3">
-                {(free?.features ?? []).map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm text-ink-soft">
-                    <Check className="mt-0.5 size-4 shrink-0 text-rose" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Button asChild size="lg" variant="outline" className="mt-8 w-full">
-                <Link href={user ? "/create" : "/register?next=/create"}>
-                  Start for free <ArrowRight />
-                </Link>
-              </Button>
-            </article>
-
-            <article className="relative flex flex-col overflow-hidden rounded-[2rem] border border-plum/10 bg-plum p-6 text-white shadow-lift sm:p-8">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-rose/30 blur-3xl"
-              />
-              <div className="relative flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-petal">
-                    Heartly Premium
+                  <p className="mt-2 font-display text-3xl text-plum">
+                    Free
+                    <span className="ml-1 font-sans text-xs text-ink-soft">forever</span>
                   </p>
-                  <h2 className="mt-2 font-display text-3xl">
-                    For the moments you linger over
-                  </h2>
                 </div>
-                <Badge variant="premium" className="border-white/20 bg-white/10">
-                  <Crown /> Most loved
-                </Badge>
-              </div>
-              <p className="relative mt-4 text-sm leading-relaxed text-white/65">
-                {premium?.description ??
-                  "Every template, every detail, and every way to make someone feel special."}
-              </p>
-              <p className="relative mt-6 font-display text-5xl">
-                {premiumPrice}
-                <span className="ml-1 font-sans text-sm text-white/60">
-                  / month
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-blush text-rose">
+                  <Heart className="size-4" />
                 </span>
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-ink-soft">
+                {free?.description ?? "Everything you need to send a thoughtful digital gift."}
               </p>
-              <p className="relative mt-1 text-[11px] text-white/45">
-                {currency === "USD"
-                  ? "Billed in US dollars."
-                  : `About ${premiumUsd} per month.`}
-              </p>
-              <ul className="relative mt-6 flex-1 space-y-3">
-                {(premium?.features ?? []).map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm text-white/85">
-                    <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-white/15">
+              <ul className="mt-5 flex-1 space-y-2.5">
+                {(free?.features ?? []).map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-xs text-ink-soft">
+                    <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full bg-blush text-rose">
                       <Check className="size-2.5" />
                     </span>
                     {feature}
                   </li>
                 ))}
               </ul>
-              <div className="relative mt-8">
-                <UpgradeButton
-                  signedIn={Boolean(user)}
-                  isPremium={entitlements.tier === "premium"}
-                  amountTzs={premium?.price_tzs ?? 15000}
-                />
-                <p className="mt-3 text-center text-[10px] text-white/45">
-                  Enter your number and approve the secure mobile money prompt. Cancel anytime.
-                </p>
-              </div>
+              <Button asChild size="lg" variant="outline" className="mt-6 w-full">
+                <Link href={user ? "/create" : "/register?next=/create"}>
+                  Start for free <ArrowRight />
+                </Link>
+              </Button>
             </article>
+
+            {premiumPlans.map((plan) => (
+              <PlanCard
+                key={plan.code}
+                plan={plan}
+                signedIn={Boolean(user)}
+                highlight={plan.code === "premium_plus"}
+                current={entitlements.planCode === plan.code}
+              />
+            ))}
           </div>
 
           <p className="mx-auto mt-6 flex max-w-4xl items-center justify-center gap-2 text-center text-xs text-ink-soft">
@@ -205,19 +286,26 @@ export default async function PricingPage() {
           <SectionHeading
             eyebrow="Compare"
             title="What changes with Premium."
-            description="Everything in Free stays free. Premium adds room, polish and the details that make a gift feel unforgettable."
+            description="Every Premium plan unlocks the full feature set. Higher plans add more active gifts and more photos per gift."
           />
-          <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-3xl border border-line bg-white/75 shadow-soft">
-            <table className="w-full text-left text-sm">
+          <div className="mx-auto mt-10 max-w-5xl overflow-x-auto rounded-3xl border border-line bg-white/75 shadow-soft">
+            <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="border-b border-line bg-cream/60 text-[10px] uppercase tracking-wider text-ink-soft">
                 <tr>
                   <th className="px-5 py-4 font-medium">Feature</th>
                   <th className="px-5 py-4 text-center font-medium">Free</th>
-                  <th className="px-5 py-4 text-center font-medium text-rose">Premium</th>
+                  {premiumPlans.map((plan) => (
+                    <th
+                      key={plan.code}
+                      className="px-5 py-4 text-center font-medium text-rose"
+                    >
+                      {plan.name.replace("Heartly ", "")}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {comparison.map((row) => (
+                {comparisonFeatures.map((row) => (
                   <tr key={row.feature} className="border-b border-line/70 last:border-0">
                     <td className="px-5 py-3.5 text-ink-soft">{row.feature}</td>
                     <td className="px-5 py-3.5 text-center text-ink-soft">
@@ -231,17 +319,25 @@ export default async function PricingPage() {
                         row.free
                       )}
                     </td>
-                    <td className="px-5 py-3.5 text-center font-medium text-plum">
-                      {typeof row.premium === "boolean" ? (
-                        row.premium ? (
-                          <Check className="mx-auto size-4 text-rose" />
-                        ) : (
-                          <X className="mx-auto size-4 text-ink-soft/40" />
-                        )
-                      ) : (
-                        row.premium
-                      )}
-                    </td>
+                    {premiumPlans.map((plan) => {
+                      const value = row.key ? premiumValue(plan, row.key) : true;
+                      return (
+                        <td
+                          key={plan.code}
+                          className="px-5 py-3.5 text-center font-medium text-plum"
+                        >
+                          {typeof value === "boolean" ? (
+                            value ? (
+                              <Check className="mx-auto size-4 text-rose" />
+                            ) : (
+                              <X className="mx-auto size-4 text-ink-soft/40" />
+                            )
+                          ) : (
+                            value
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

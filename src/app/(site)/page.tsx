@@ -81,7 +81,7 @@ const features = [
 ];
 
 export default async function HomePage() {
-  const { categories, templates } = await getCatalogue();
+  const { categories, templates, plans } = await getCatalogue();
   const featured = [
     ...templates.filter((template) => !template.is_premium),
     ...templates.filter((template) => template.is_premium),
@@ -100,7 +100,15 @@ export default async function HomePage() {
       background: palette.background,
     };
   });
-  const premium = formatMoney(15000, "TZS");
+  const startingPremium = Math.min(
+    ...plans
+      .filter((plan) => plan.limits.tier === "premium" && plan.price_tzs > 0)
+      .map((plan) => plan.price_tzs),
+  );
+  const premium = formatMoney(
+    Number.isFinite(startingPremium) ? startingPremium : 3000,
+    "TZS",
+  );
   const animationStyles = new Set(
     templates.map((template) => template.animation_config?.type),
   ).size;

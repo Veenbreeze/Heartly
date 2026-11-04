@@ -46,12 +46,13 @@ export function formatMoney(
       notation: options?.compact ? "compact" : "standard",
     }).format(amount / 100);
   }
-  return new Intl.NumberFormat("en-TZ", {
-    style: "currency",
-    currency: "TZS",
-    maximumFractionDigits: 0,
-    notation: options?.compact ? "compact" : "standard",
-  }).format(amount);
+    return new Intl.NumberFormat("en-TZ", {
+      style: "currency",
+      currency: "TZS",
+      currencyDisplay: "code",
+      maximumFractionDigits: 0,
+      notation: options?.compact ? "compact" : "standard",
+    }).format(amount);
 }
 
 export function formatDate(

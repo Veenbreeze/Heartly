@@ -24,12 +24,24 @@ describe("entitlements", () => {
 
     expect(premium.tier).toBe("premium");
     expect(premium.planName).toBe("Heartly Premium");
-    expect(premium.maxActiveGifts).toBe(100);
-    expect(premium.maxMedia).toBe(20);
+    expect(premium.maxActiveGifts).toBe(20);
+    expect(premium.maxMedia).toBe(5);
     expect(premium.can("premium_templates")).toBe(true);
     expect(premium.can("advanced_animation")).toBe(true);
     expect(premium.can("music")).toBe(true);
     expect(premium.can("qr_code")).toBe(true);
+  });
+
+  it("scales limits across premium tiers", () => {
+    const plus = entitlementsFromPlan(getFallbackPlan("premium_plus"));
+    const max = entitlementsFromPlan(getFallbackPlan("premium_max"));
+
+    expect(plus.tier).toBe("premium");
+    expect(plus.maxActiveGifts).toBe(50);
+    expect(plus.maxMedia).toBe(10);
+    expect(max.tier).toBe("premium");
+    expect(max.maxActiveGifts).toBe(100);
+    expect(max.maxMedia).toBe(20);
   });
 
   it("merges partial plan limits over free limits", () => {

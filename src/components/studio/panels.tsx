@@ -763,7 +763,7 @@ export function MediaPanel({
         )}
         {capabilities.tier === "free" && atLimit ? (
           <p className="flex items-center gap-1.5 text-[11px] text-ink-soft">
-            <Crown className="size-3 text-rose" /> Premium includes up to 20 photos per gift.
+            <Crown className="size-3 text-rose" /> Premium plans include more photos per gift.
           </p>
         ) : null}
       </PanelSection>

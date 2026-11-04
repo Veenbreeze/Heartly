@@ -4,12 +4,13 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import { createCheckout } from "@/lib/payments/service";
 import { apiError, apiOk, assertSameOrigin, readJson } from "@/lib/api";
 import { rateLimit } from "@/lib/rate-limit";
-import type { Plan } from "@/lib/types";
+import type { Plan, PlanLimits } from "@/lib/types";
 
 const checkoutSchema = z.object({
-  planCode: z.literal("premium"),
+  planCode: z.string().trim().regex(/^[a-z0-9_]{2,40}$/),
   currency: z.literal("TZS").default("TZS"),
   phoneNumber: z.string().trim().min(9).max(18),
+  network: z.enum(["mpesa", "halopesa", "airtelmoney", "yas"]),
 });
 
 export async function POST(request: Request) {
@@ -44,6 +45,9 @@ export async function POST(request: Request) {
     .eq("is_active", true)
     .maybeSingle();
   if (!plan) return apiError("That plan is not available", 404);
+  if ((plan.limits as PlanLimits | null)?.tier !== "premium") {
+    return apiError("That plan is not available", 404);
+  }
 
   try {
     const checkout = await createCheckout({
@@ -51,6 +55,7 @@ export async function POST(request: Request) {
       plan: plan as Plan,
       currency: "TZS",
       phoneNumber,
+      network: parsed.data.network,
     });
     return apiOk({
       url: checkout.checkoutUrl,
